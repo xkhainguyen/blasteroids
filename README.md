@@ -14,7 +14,7 @@ yssimplesound.cpp;
 mmlplayer.hpp;
 mmlplayer.cpp
 
-so you have to copy your own system-dependent files into this directory.
+so you have to copy your own system-dependent files into your local directory.
 
 Add your modules just like the ship.hpp and ship.cpp, then compile like this (on my Ubuntu).
 
