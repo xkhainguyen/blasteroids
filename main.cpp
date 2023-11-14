@@ -1,5 +1,5 @@
 #include <iostream>
-#include "blasteroids.hpp"
+#include "ship.hpp"
 
 int main() {
     std::cout << "Hello, World!" << test(5) << std::endl;    
