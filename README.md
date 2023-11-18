@@ -2,7 +2,7 @@
 
 Game development project for CMU 24780
 
-## How to develope
+## How to develop
 
 I do
 gitignore on these
@@ -21,3 +21,8 @@ Add your modules just like the ship.hpp and ship.cpp, then compile like this (on
 ```bash
 g++ main.cpp ship.cpp [additional things]
 ```
+
+## compiling menu test script
+
+to complie the menu test script the following additional files must be included in the compile command along with `menu_test_script.cpp`
+`menu.cpp fssimplewindow.cpp ysglfontdata.c`
