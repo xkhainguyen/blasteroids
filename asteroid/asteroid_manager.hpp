@@ -1,5 +1,5 @@
-#ifndef ASTEROIDMANAGER_HPP
-#define ASTEROIDMANAGER_HPP
+#ifndef ASTEROID_MANAGER_HPP
+#define ASTEROID_MANAGER_HPP
 
 #include <vector>
 #include "asteroid.hpp"
@@ -7,6 +7,7 @@
 #include <random>
 #include "fssimplewindow.h"
 #include <iostream>
+#include <cstdlib>  
 
 class AsteroidManager {
     std::vector<Asteroid> asteroids;
@@ -27,4 +28,4 @@ public:
     void initializeAsteroid(double posX, double posY, bool isBreakup, int param);
 };
 
-#endif // ASTEROIDMANAGER_HPP
+#endif // ASTEROID_MANAGER_HPP
