@@ -45,12 +45,12 @@ bool GameMenu::check_mouse_posn(int mx,int my,int box_x, int box_y, int box_w, i
 
 void GameMenu::SetButtons()
 {
-    start.set(250,400,50,130,255,0,0,"Start Game");
+    start.set(335,325,50,130,255,0,0,"Start Game");
     one_p.set(70,70,50,130,255,0,0,"One Player");
-    two_p.set(300,70,50,130,255,0,0,"Two Player");
-    easy.set(70,250,50,60,255,0,0,"Easy");
-    medium.set(150,250,50,100,255,0,0,"Medium");
-    hard.set(270,250,50,60,255,0,0,"Hard");
+    two_p.set(600,70,50,130,255,0,0,"Two Player");
+    easy.set(70,200,50,60,255,0,0,"Easy");
+    medium.set(350,200,50,100,255,0,0,"Medium");
+    hard.set(670,200,50,60,255,0,0,"Hard");
 }
 
 int GameMenu::RunOneStep()
@@ -143,7 +143,7 @@ int GameMenu::RunOneStep()
         {
             one_p.pushed=true;
             two_p.pushed=false;
-            n_player=1;
+            isMultiplayer=false;
         }
     }
     if (check_mouse_posn(mx,my,two_p.x,two_p.y,two_p.w,two_p.h))
@@ -154,7 +154,7 @@ int GameMenu::RunOneStep()
         {
             two_p.pushed=true;
             one_p.pushed=false;
-            n_player=2;
+            isMultiplayer=true;
         } 
     }
     if(true==easy.pushed)

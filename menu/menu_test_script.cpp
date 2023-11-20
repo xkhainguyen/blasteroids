@@ -13,7 +13,14 @@ int main(void)
         int menu_sel=menu.RunOneStep();
         if(GameMenu::BMENU_Start==menu_sel)
         {
-            std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are "<<menu.n_player<<" players";
+            if (true==menu.isMultiplayer)
+            {
+                std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are two players";
+            }
+            else
+            {
+               std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there is one player"; 
+            }
             break;
         }
         else if (GameMenu::BMENU_QUIT==menu_sel)

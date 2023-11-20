@@ -33,7 +33,7 @@ class GameMenu
         Button medium;
         Button hard;
         char difficulty='X';
-        int n_player=0;
+        bool isMultiplayer=false;
         void SetButtons();
         int RunOneStep (void);
         bool check_mouse_posn(int mx,int my,int box_x, int box_y, int box_w, int box_h);
