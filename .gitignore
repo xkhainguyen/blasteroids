@@ -32,9 +32,9 @@
 *.app
 
 .vscode
-fssimplewindow.hpp
+fssimplewindow.h
 fssimplewindow.cpp
-yssimplesound.hpp 
+yssimplesound.h
 yssimplesound.cpp 
-mmlplayer.hpp
+mmlplayer.h
 mmlplayer.cpp
