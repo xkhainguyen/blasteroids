@@ -18,6 +18,15 @@ PlayerStats::PlayerStats(int numLevels)
     this->scoreTotal = 0;
     this->startTime = 0;
     this->endTime = 0;
+
+    // init with zeros
+    for (int i = 0; i < numLevels; i++)
+    {
+        this->numAsteroidHitLevels[i] = 0;
+        this->numBulletShotLevels[i] = 0;
+        this->timeLevels[i] = 0;
+        this->scoreLevels[i] = 0;
+    }
 }
 
 PlayerStats::~PlayerStats()
@@ -65,7 +74,12 @@ int PlayerStats::computeScore(int difficulty, int level)
 
 Player::Player()
 {
-    this->stats = PlayerStats(3);
+}
+
+Player::Player(int id, int numLevels)
+{
+    this->id = id;
+    this->stats = PlayerStats(numLevels);
 }
 
 Player::~Player()
@@ -85,7 +99,7 @@ GameSummary::~GameSummary()
 
 int GameSummary::showStats(Player player, int level)
 {
-    cout << "Player " << player.stats.numPlayers << " stats for level " << level << endl;
+    cout << "Player " << player.id << " stats for level " << level << endl;
     cout << "Number of Asteroid Hit: " << player.stats.numAsteroidHitLevels[level] << endl;
     cout << "Number of Bullet Shot: " << player.stats.numBulletShotLevels[level] << endl;
     cout << "Time: " << player.stats.timeLevels[level] << endl;

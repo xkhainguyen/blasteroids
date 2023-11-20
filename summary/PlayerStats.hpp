@@ -38,10 +38,12 @@ public:
 class Player
 {
 public:
+    int id;
     PlayerStats stats;
 
 public:
     Player();
+    Player(int id, int numLevels);
     ~Player();
 };
 
