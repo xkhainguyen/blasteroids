@@ -38,3 +38,9 @@ yssimplesound.h
 yssimplesound.cpp 
 mmlplayer.h
 mmlplayer.cpp
+yspng.h
+yspng.cpp
+ysglfontdata.h
+ysglfontdata.cpp
+mmlplayer.h
+mmlplayer.cpp
