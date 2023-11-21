@@ -21,5 +21,10 @@ Each folder within this repository represents the component code of a different 
   * Classes: asteroid.hpp/.cpp asteroid_manager.hpp/.cpp asteroid_test.cpp
     * Created a model for physical interaction between asteroids
     * Established baseline game logic for asteroids and their destruction
-    * Created a raw demonstration of asteroid object initialization and behavior in the game 
+    * Created a raw demonstration of asteroid object initialization and behavior in the game
+   
+* game-Author: Nikole Chetty
+  * game.cpp-Has mock implementations of the six subclasses: Menu, Ship, Asteroid, Sound, Background, and Summary
+Implements the master game class which initializes the classes, then renders and updates the game, until and end game condition is met
+The game is tested by the main loop
  
