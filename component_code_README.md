@@ -27,4 +27,13 @@ Each folder within this repository represents the component code of a different 
   * game.cpp-Has mock implementations of the six subclasses: Menu, Ship, Asteroid, Sound, Background, and Summary
 Implements the master game class which initializes the classes, then renders and updates the game, until and end game condition is met
 The game is tested by the main loop
+
+* summary-Author: Khai Nguyen
+  * Class PlayerStats (to be included in class Ship or Player) define all the game statistics (bullets shot, asteroid hit, time, score) for each player for each level. It has several methods to be called by the game master when a corresponding event happens. It can also compute the total score after each level.
+  * Class Player is a dummy class for testing purposes. This includes the PlayerStats.
+  * Class GameSummary defines what we want to show at the end of each level and after credit and methods to print them out on the screen. Game master will call the methods at the right time. Right now they are just printing to the terminal.
+  * I have a `test` script to check if everything is working as expected.
+ 
+* background-Author: Pratik Satija
+  * The background functionality has been modularized into a Sphere Class, along with two supporting functions: DrawSphere and DrawBackground. These components have been defined in my background header file. The actual implementation of the Sphere Class and functions has been specified in the corresponding .cpp file. To streamline the testing process effectively, I opted to merge my code with the existing GameMenu test code. This approach not only facilitated a comprehensive understanding of my teammate's coding style but also set the groundwork for smoother integration of different code segments in the future. This collaborative approach enhances our team's overall efficiency and cohesion. 
  
