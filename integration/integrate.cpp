@@ -4,49 +4,20 @@
 #include <iostream>
 #include "fssimplewindow.h"
 #include "ysglfontdata.h"
+#include "mmlplayer.h"
+#include "yssimplesound.h"
 #include "menu.h"
 #include "background.h"
 #include "ship.h"
 #include "asteroid_manager.hpp"
+#include "SoundManager.h"
 #include <cstdlib>
+
+
 
 // Mock implementations of your subclasses
 
-// class Ship {
-// public:
-//     bool state = true;
 
-//     void initialize() {
-//         std::cout << "Ship initialized" << std::endl;
-//     }
-
-//     void render() {
-//         std::cout << "Ship rendered" << std::endl;
-//     }
-
-//     void updateShip() {
-//         std::cout << "Ship updated" << std::endl;
-//     }
-
-//     void updateMissiles() {
-//         std::cout << "Missiles updated" << std::endl;
-//     }
-// };
-
-class Sound {
-public:
-    void initialize() {
-        // std::cout << "Sound initialized" << std::endl;
-    }
-
-    void render() {
-        // std::cout << "Sound rendered" << std::endl;
-    }
-
-    void endGame() {
-        // std::cout << "Sound end game" << std::endl;
-    }
-};
 
 class Summary {
 public:
@@ -59,17 +30,18 @@ public:
 
 class Game {
 public:
-    GameMenu menu;
-    // Ship ship;
-    Sound sound;
-    Summary summary;    
-    AsteroidManager manager;
-
     bool isGameOver;
     int x1 = 200, y1 = 550, x2 = 600, y2 = 550;
 	int friendlyFire = 0;
 	int windowWidth = 800, windowHeight = 600;
+
+    GameMenu menu;
+    SoundManager soundManager;
+    Summary summary;    
+    AsteroidManager manager;
+    // TODO: Two ships are currently hardcoded - needs to be updated 
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
+
 
 
     Game() {
@@ -80,11 +52,13 @@ public:
 
 
 
-    void start() {
+    void run() {
         // Display menu and get player choices
         displayMenu();
+
         // Initialize game components based on player choices
         initializeGame();
+
         // Main game loop
         std::cout << "Game starting!!" << std::endl;
 
@@ -140,7 +114,7 @@ private:
 
 
     void initializeGame() {
-        // Initialize ship, asteroids, sounds, and background
+        // Initialize ship, asteroids, & sounds
 
         // Initialize asteriods 
         int difficulty_level = convertDifficultyCharToInt(menu.difficulty);
@@ -148,8 +122,11 @@ private:
         manager.initialize(difficulty_level, 800, 600, asteroid_count);
         std::cout << "Asteroids: " << manager.getCurrentAsteroids().size() << std::endl;
 
-        // ship.initialize();
-        sound.initialize();
+        // Initialize ship
+
+        // Initialize sound
+        soundManager.Initialize();
+
     }
 
     int convertDifficultyCharToInt(char difficultyChar) {
@@ -172,38 +149,49 @@ private:
 		FsPollDevice();
 		auto key = FsInkey();
 
+        // SHIP 
 		switch (key)
 		{
 		case FSKEY_LEFT:
 			ships[0].moveShipLeft();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_RIGHT:
 			ships[0].moveShipRight();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_UP:
 			ships[0].moveShipUp();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_DOWN:
 			ships[0].moveShipDown();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_SPACE:
 			ships[0].TriggerMissile();
+            soundManager.PlaySound(true, false, false, false);
 			break;
 
 		case FSKEY_A:
 			ships[1].moveShipLeft();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_D:
 			ships[1].moveShipRight();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_W:
 			ships[1].moveShipUp();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_S:
 			ships[1].moveShipDown();
+            soundManager.PlaySound(false, false, true, false);
 			break;
 		case FSKEY_Q:
 			ships[1].TriggerMissile();
+            soundManager.PlaySound(true, false, false, false);
 			break;
 		}
 
@@ -220,10 +208,16 @@ private:
 			ship.ShootMissile();
 		}
 
+        // ASTEROIDS
         manager.drawAsteroids();
-        
+    
+
+        // SOUND 
+        soundManager.UpdateStream();
+
         FsSwapBuffers();
         FsSleep(25);
+
     }
 
 
@@ -231,7 +225,7 @@ private:
         // Update asteroids
         manager.updateAsteroids();
 
-        // Update ship --- future, currently in renderFrame
+        // TODO: Update ship ----- currently in renderFrame
 
 
         /////////////////////// Check for collisions //////////////////////
@@ -242,6 +236,7 @@ private:
             for (auto& ship : ships) {            
                 if (checkCollision(ship.xCoord, ship.yCoord, 15, aster.x, aster.y, aster.radius)){
                     ship.isAlive = false;
+                    soundManager.PlaySound(false, false, false, true);
                 }
                 else {
                     for (auto& missile : ship.missiles) {  
@@ -249,6 +244,7 @@ private:
                             if (checkCollision(missile.xCoord, missile.yCoord, 2, aster.x, aster.y, aster.radius)){
                                 missile.isActive = false;
                                 manager.destroyAsteroid(asteriod_counter);
+                                soundManager.PlaySound(false, true, false, false);
                             };
                         }
                     }
@@ -296,7 +292,6 @@ void displayEndGameSummary() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawBackground();
     summary.showEndGame();
-    sound.endGame();
     FsSwapBuffers();
     FsSleep(25);
     // std::cout<< "Print game end summary" << std::endl;
@@ -308,6 +303,6 @@ void displayEndGameSummary() {
 // Test the Game class
 int main() {
     Game game;
-    game.start();
+    game.run();
     return 0;
 }
