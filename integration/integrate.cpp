@@ -11,37 +11,31 @@
 #include "ship.h"
 #include "asteroid_manager.hpp"
 #include "SoundManager.h"
+#include "PlayerStats.hpp"
 #include <cstdlib>
-
-
-
-// Mock implementations of your subclasses
-
-
-
-class Summary {
-public:
-    void showEndGame() {
-        // std::cout << "End game summary shown" << std::endl;
-    }
-};
 
 
 
 class Game {
 public:
     bool isGameOver;
+    int currentLevel = 1;
     int x1 = 200, y1 = 550, x2 = 600, y2 = 550;
 	int friendlyFire = 0;
 	int windowWidth = 800, windowHeight = 600;
+    int numPlayers =2;
+    int difficulty_level = 1;
+
 
     GameMenu menu;
-    SoundManager soundManager;
-    Summary summary;    
+    SoundManager soundManager;   
     AsteroidManager manager;
+    GameSummary gameSummary;
+    
+
     // TODO: Two ships are currently hardcoded - needs to be updated 
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
-
+    PlayerStats stats[2] = { PlayerStats(3), PlayerStats(3)};
 
 
     Game() {
@@ -67,6 +61,13 @@ public:
             if (FsGetKeyState(FSKEY_ESC)) {
                 break;
             }
+            if (FsGetKeyState(FSKEY_P)) {
+                std::cout << "Game paused" << std::endl;
+                FsPollDevice();
+                while (!FsGetKeyState(FSKEY_O)) {
+                    FsPollDevice();
+                }
+            }
             // Update game state
             updateGame();
 
@@ -84,7 +85,6 @@ public:
 
     }
 
-private:
     void displayMenu() {
         
         menu.SetButtons();
@@ -117,15 +117,35 @@ private:
         // Initialize ship, asteroids, & sounds
 
         // Initialize asteriods 
-        int difficulty_level = convertDifficultyCharToInt(menu.difficulty);
+        difficulty_level = convertDifficultyCharToInt(menu.difficulty);
         int asteroid_count = 2;
         manager.initialize(difficulty_level, 800, 600, asteroid_count);
         std::cout << "Asteroids: " << manager.getCurrentAsteroids().size() << std::endl;
 
+        
+        if (true==menu.isMultiplayer){
+            numPlayers = 2;
+        }
+        else {
+            numPlayers = 1;
+        }
+
+
+
+
         // Initialize ship
+
+
 
         // Initialize sound
         soundManager.Initialize();
+
+        gameSummary.Initialize(numPlayers, 3, difficulty_level);
+        
+        for (auto& stat : stats) {
+            stat.startTimeCounter(currentLevel);
+        }
+
 
     }
 
@@ -171,6 +191,7 @@ private:
 		case FSKEY_SPACE:
 			ships[0].TriggerMissile();
             soundManager.PlaySound(true, false, false, false);
+            stats[0].addOneBulletShot(currentLevel);
 			break;
 
 		case FSKEY_A:
@@ -192,6 +213,7 @@ private:
 		case FSKEY_Q:
 			ships[1].TriggerMissile();
             soundManager.PlaySound(true, false, false, false);
+            stats[1].addOneBulletShot(currentLevel);
 			break;
 		}
 
@@ -232,11 +254,17 @@ private:
         // ship-asteroid, asteroid-missle, missle-ship
         
         size_t asteriod_counter = 0;
+        
         for (auto& aster : manager.getCurrentAsteroids()) {
+            int current_ship = 0;
             for (auto& ship : ships) {            
                 if (checkCollision(ship.xCoord, ship.yCoord, 15, aster.x, aster.y, aster.radius)){
-                    ship.isAlive = false;
-                    soundManager.PlaySound(false, false, false, true);
+                    if (ship.isAlive){
+                        ship.isAlive = false;
+                        soundManager.PlaySound(false, false, false, true);
+                        stats[current_ship].saveTimeCounter(currentLevel);
+                    }
+                    
                 }
                 else {
                     for (auto& missile : ship.missiles) {  
@@ -245,10 +273,12 @@ private:
                                 missile.isActive = false;
                                 manager.destroyAsteroid(asteriod_counter);
                                 soundManager.PlaySound(false, true, false, false);
+                                stats[current_ship].addOneAsteriodHit(currentLevel);
                             };
                         }
                     }
                 }
+                current_ship = current_ship+1;
             }
             asteriod_counter = asteriod_counter +1;
 
@@ -267,11 +297,14 @@ private:
    bool checkGameOver() {
         // Check if game over conditions are met
         // Ship dead :(
-        // need to adjest to check for multiple ships
+        // need to adjest to check for multiple ship
+
         if (!ships[0].isAlive & !ships[1].isAlive) {
             std::cout<<"Game over!! The ship died!!" << std::endl;
             return true;
         }
+
+        
 
         // Asteroids 
         size_t noAsteroids = 0;
@@ -289,9 +322,19 @@ private:
 
 void displayEndGameSummary() {
     // Display summary statistics and credits
+    for (int player = 0; player < numPlayers; ++player) {
+        if (ships[player].isAlive) {
+            stats[player].saveTimeCounter(currentLevel);
+        }
+        gameSummary.showStats(stats[player], currentLevel, player);   
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawBackground();
-    summary.showEndGame();
+
+    glColor3ub(255, 0, 255);
+    glRasterPos2i(100,100);
+    YsGlDrawFontBitmap12x16("Game over");
+
     FsSwapBuffers();
     FsSleep(25);
     // std::cout<< "Print game end summary" << std::endl;
