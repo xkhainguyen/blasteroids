@@ -1,5 +1,3 @@
-#include <iostream>
-#include "mmlplayer.h"
 #include "fssimplewindow.h"
 #include "yssimplesound.h"
 #include "SoundManager.h"
@@ -14,29 +12,13 @@ int main(void)
     soundManager.Initialize();
 
 	soundManager.player.Start();
-
-	YsSoundPlayer::Stream stream;
-	soundManager.player.StartStreaming(stream);
-
-	YsSoundPlayer::SoundData nextWave;
-	auto rawWave=soundManager.mmlplayer.GenerateWave(100);  // Create for next 100ms
-	nextWave.CreateFromSigned16bitStereo(YM2612::WAVE_SAMPLING_RATE,rawWave);
-
-	if(0!=soundManager.mmlplayer.GetLastErrorCode())
-	{
-		for(auto msg : soundManager.mmlplayer.GetLastError().Format())
-		{
-			std::cout << msg << std::endl;
-		}
-	}
-
-    
+	soundManager.PlayMusic();
 
 	for(;;)
 	{
 		FsPollDevice();
 
-		soundManager.player.KeepPlaying();  // <- This line is only needed for Linux ALSA.
+		//soundManager.player.KeepPlaying();  // <- This line is only needed for Linux ALSA.
 
 		auto key=FsInkey();
 		if(FSKEY_ESC==key)
@@ -59,24 +41,7 @@ int main(void)
         {
             soundManager.PlaySound(false, false, false, true);
         }
-
-		if(YSTRUE==soundManager.player.StreamPlayerReadyToAcceptNextSegment(stream,nextWave))
-		{
-			soundManager.player.AddNextStreamingSegment(stream,nextWave);
-			auto rawWave=soundManager.mmlplayer.GenerateWave(1000);  // Create for next 100ms
-			nextWave.CreateFromSigned16bitStereo(YM2612::WAVE_SAMPLING_RATE,rawWave);
-
-			if(0!=soundManager.mmlplayer.GetLastErrorCode())
-			{
-				for(auto msg : soundManager.mmlplayer.GetLastError().Format())
-				{
-					std::cout << msg << std::endl;
-				}
-			}
-		}
 	}
-
-	//soundManager.player.End();
 
 	return 0;
 }
