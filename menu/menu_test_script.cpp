@@ -3,6 +3,8 @@
 #include <iostream>
 
 
+
+
 int main(void)
 {
     GameMenu menu;
@@ -13,6 +15,7 @@ int main(void)
         int menu_sel=menu.RunOneStep();
         if(GameMenu::BMENU_Start==menu_sel)
         {
+
             if (true==menu.isMultiplayer)
             {
                 std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are two players";
