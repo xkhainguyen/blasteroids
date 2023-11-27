@@ -8,8 +8,9 @@ int main()
     int wid = 800;
     int hei = 600;
     GameSummary gameSummary(numPlayers, numLevels, difficulty, wid, hei);
+
+    // stats does not need to be part of the Ship class
     PlayerStats stats[2] = {PlayerStats(1, numLevels), PlayerStats(2, numLevels)};
-    // std::cout << stats[0].id << std::endl;
 
     int currentLevel = 0; // 3 levels 0, 1, 2 -> indexes 0, 1, 2
     int displayCredit = 0;
@@ -51,6 +52,7 @@ int main()
             stats[0].addOneBulletShot(currentLevel);
             FsSleep(1000);
             stats[0].saveTimeCounter(currentLevel);
+            // compute score after each level
             stats[0].computeScoreLevels(difficulty, currentLevel);
 
             stats[1].startTimeCounter(currentLevel);
@@ -99,10 +101,9 @@ int main()
             stats[1].computeScoreLevels(difficulty, currentLevel);
         }
 
-        // After each level is completed, show the stats
+        // After each level is completed, show the stats on the screen
         if (gameDone == 0)
         {
-            // std::cout << "display level" << std::endl;
             if (numPlayers == 1)
             {
                 gameSummary.showStats(stats[0], currentLevel);
@@ -114,18 +115,16 @@ int main()
             }
         }
 
-        // At the end, show the endgame
+        // At the end, show the endgame on the screen
         if (gameDone > 0)
         {
             if (displayCredit == 0)
             {
-                // std::cout << "display endgame" << std::endl;
                 gameSummary.showEndgame(stats[0]);
                 gameSummary.showEndgame(stats[1]);
             }
 
             if (displayCredit == 1)
-                // std::cout << "display credit" << std::endl;
                 gameSummary.showCredit();
         }
 
