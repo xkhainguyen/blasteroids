@@ -1,16 +1,30 @@
 #include "asteroid_manager.hpp"
+#include <random>
+#include <vector>
 
-// Constructor implementation
-AsteroidManager::AsteroidManager(int difficulty, int width, int height, int num)
-    : difficultyLevel(difficulty), mapWidth(width), mapHeight(height), numAsteroids(num) {
-    // Initialize random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    this->gen = gen;
+
+AsteroidManager::AsteroidManager() : gen(std::random_device()()), initialized(false) {
+    // Constructor implementation
+}
+
+void AsteroidManager::initialize(int level, int width, int height, int num) {
+    difficultyLevel = level;
+    mapWidth = width;
+    mapHeight = height;
+    numAsteroids = num;
+
+    // Clear existing asteroids and reinitialize
+    asteroids.clear();
+    for (int i = 0; i < numAsteroids; ++i) {
+        initializeAsteroid(0.0, 0.0, false, 0);
+    }
 
     // Initialize asteroids
-    setDifficulty(difficulty);
+    setDifficulty(difficultyLevel);
+
+    initialized = true; // Mark as initialized
 }
+
 
 // Set the difficulty level
 void AsteroidManager::setDifficulty(int level) {
@@ -29,7 +43,7 @@ void AsteroidManager::initializeAsteroid(double posX = 0, double posY = 0, bool 
 {
     std::uniform_real_distribution<> dis(-10.0 * difficultyLevel, 10.0 * difficultyLevel);
     std::uniform_real_distribution<> disPos(0, mapHeight);
-    std::uniform_real_distribution<> disRadius(20, 30);
+    std::uniform_real_distribution<> disRadius(10, 30);
 
     // Initialize new asteroids
     double velocityX = dis(gen);

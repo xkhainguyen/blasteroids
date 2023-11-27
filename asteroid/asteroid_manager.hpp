@@ -10,14 +10,20 @@
 #include <cstdlib>  
 
 class AsteroidManager {
-    std::vector<Asteroid> asteroids;
     int difficultyLevel;
-    int mapWidth, mapHeight;
-    std::mt19937 gen;
+    int mapWidth;
+    int mapHeight;
     int numAsteroids;
+    std::vector<Asteroid> asteroids;
+    std::mt19937 gen;
+    bool initialized;
 
 public:
-    AsteroidManager(int difficulty, int width, int height, int num);
+    // Default constructor
+    AsteroidManager();
+
+    // Initialize function
+    void initialize(int level, int width, int height, int num);
     void setDifficulty(int level);
     std::vector<Asteroid> getCurrentAsteroids() const;
     void destroyAsteroid(size_t index);

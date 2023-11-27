@@ -1,5 +1,10 @@
 #include "asteroid.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+
 // Constructor implementation
 Asteroid::Asteroid(double x, double y, double vx, double vy, double radius, int breakUpCount)
     : x(x), y(y), vx(vx), vy(vy), radius(radius), isActive(true), breakUpCount(breakUpCount) {}
