@@ -8,7 +8,9 @@ int main() {
     int DIFFICULTY_LEVEL = 3;
     int ASTEROID_COUNT = 10;
 
-    AsteroidManager manager(DIFFICULTY_LEVEL, 800, 600, ASTEROID_COUNT);
+    AsteroidManager manager = AsteroidManager();
+
+    manager.initialize(DIFFICULTY_LEVEL, 800, 600, ASTEROID_COUNT);
 
     while (true) {
         FsPollDevice();
