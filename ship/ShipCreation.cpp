@@ -1,6 +1,8 @@
 #include "ship.h"
 #include <iostream>
 
+#define Pi 3.14159265358979323846
+
 void Missile::activateMissile(int startingx, int startingy) {
 	isActive = true;
 	xCoord = startingx;
@@ -11,9 +13,13 @@ void Missile::shoot() {
 	if (!isActive) {
 		return;
 	}
-	xCoord = xCoord;
-	yCoord = yCoord + velocity;
-	if (yCoord < 0)
+
+	double ang = startingDegreeAngle * Pi / 180;
+
+	xCoord -= velocity*sin(ang);
+	yCoord += velocity*cos(ang);
+
+	if (yCoord < 0||yCoord > 1024||xCoord >1024||xCoord <0)
 	{
 		disappear();
 	}
@@ -27,10 +33,16 @@ void Missile::draw(void) {
 	if (!isActive) {
 		return;
 	}
+	double ang = startingDegreeAngle * Pi / 180;
+	double s = sin(ang);
+	double c = cos(ang);
+
 	glColor3f(1, 0, 0);
-	glBegin(GL_LINES);
+	glEnable(GL_POINT_SMOOTH);
+	glPointSize(10.0f);
+	glBegin(GL_POINTS);
 	glVertex2i(xCoord, yCoord);
-	glVertex2i(xCoord, yCoord + size);
+	glDisable(GL_POINT_SMOOTH);
 	glEnd();
 }
 
@@ -38,48 +50,50 @@ void Ship::drawPlayer() {
 	if (!isAlive) {
 		return;
 	}
-	glColor3f(0, 0, 0);
+	{
+		double ang = degAng * Pi / 180;
+		double s = sin(ang);
+		double c = cos(ang);
 
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < 64; i++) {
-		float theta = 2.0f * 3.1415926f * float(i) / float(64);
-		float x = 30.0 * cosf(theta);
-		float y = 15.0 * sinf(theta);
-		glVertex2f(x + xCoord, y + yCoord);
-	}
-	glEnd();
+		int centerX = xCoord;
+		int centerY = yCoord;
+		// Set spaceship body color
+		glColor3f(0.8f, 0.8f, 0.8f); // Light gray
+		// Draw the spaceship body (main body)
+		glBegin(GL_QUADS);
 
-	glColor3f(1, 1, 0);
-
-	float radius = 10.0f;  // Fix the radius to 10 pixels
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < 64; i++) {
-		float theta = 2.0f * 3.1415926f * float(i) / float(64);
-		float x = radius * cosf(theta);
-		float y = radius * sinf(theta);
-		glVertex2f(x + xCoord, y + yCoord);
-	}
-	glEnd();
-
-	float angleIncrement = 2.0f * 3.1415926f / 6;
-
-	for (int i = 0; i < 6; i++) {
-		float angle = i * angleIncrement;
-		float rx = 20.0 * cosf(angle);
-		float ry = 15.0 * sinf(angle);
-
-		float red = static_cast<float>(rand()) / RAND_MAX;
-		float green = static_cast<float>(rand()) / RAND_MAX;
-		float blue = static_cast<float>(rand()) / RAND_MAX;
-
-		glColor3f(red, green, blue); 
-		glBegin(GL_POLYGON);
-		for (int i = 0; i < 64; i++) {
-			float theta = 2.0f * 3.1415926f * float(i) / float(64);
-			float x = rx + 2.0f * cosf(theta);
-			float y = ry + 2.0f * sinf(theta);
-			glVertex2f(x + xCoord, y + yCoord);
-		}
+		glVertex2d(centerX - width * c * .5 + height * s * .5, centerY - height * c * .5 - width * s * .5);
+		// Upper right corner
+		glVertex2d(centerX + width * c * .5 + height * s * .5, centerY - height * c * .5 + width * s * .5);
+		// Lower right corner
+		glVertex2d(centerX + width * c * .5 - height * s * .5, centerY + height * c * .5 + width * s * .5);
+		// Lower left corner
+		glVertex2d(centerX - width * c * .5 - height * s * .5, centerY + height * c * .5 - width * s * .5);
+		glEnd();
+		// Set fins' color
+		glColor3f(0.5f, 0.5f, 0.5f); // Dark gray
+		// Draw the triangular fins on the sides
+		glBegin(GL_TRIANGLES);
+		// Left fin (triangle)
+		glVertex2d(centerX - width * c * .5 - height * s * .5, centerY + height * c * .5 - width * s * .5); // Bottom vertex
+		glVertex2d(centerX - (width * .5 + finWidth) * c - height * s * .5, centerY + height * c * .5 - (width * .5 + finWidth) * s); // Middle vertex
+		glVertex2d(centerX - width * c * .5 - (height * .5 - finHeight) * s, centerY + (height * .5 - finHeight) * c - width * s * .5); // Top vertex
+		// Right fin (triangle)
+		glVertex2d(centerX + width * c * .5 - height * s * .5, centerY + height * c * .5 + width * s * .5); // Bottom vertex
+		glVertex2d(centerX + (width * .5 + finWidth) * c - height * s * .5, centerY + height * c * .5 + (width * .5 + finWidth) * s); // Middle vertex
+		glVertex2d(centerX + width * c * .5 - (height * .5 - finHeight) * s, centerY + (height * .5 - finHeight) * c + width * s * .5); // Top vertex
+		glEnd();
+		// Set nose color
+		//glColor3f(1.0f, 1.0f, 1.0f); // White
+		glColor3f(0.5f, 0.5f, 0.5f);
+		// Draw the nose cone (triangle)
+		glBegin(GL_TRIANGLES);
+		// Top vertex of the nose cone
+		glVertex2d(centerX + (height * .5 + noseHeight) * s, centerY - (height * .5 + noseHeight) * c);
+		// Left vertex of the nose cone
+		glVertex2d(centerX - width * c * .5 + height * s * .5, centerY - height * c * .5 - width * s * .5);
+		// Right vertex of the nose cone
+		glVertex2d(centerX + width * c * .5 + height * s * .5, centerY - height * c * .5 + width * s * .5);
 		glEnd();
 	}
 }
@@ -101,6 +115,7 @@ void Ship::triggerMissile() {
 	for (int i = 0; i < numOfMissiles; ++i) {
 		if (!missiles[i].isActive) {
 			missiles[i].activateMissile(xCoord, yCoord);
+			missiles[i].startingDegreeAngle = degAng;
 			++missilesShot;
 			break;
 		}
@@ -122,23 +137,23 @@ void Ship::moveShipLeft(void)
 	if (!isAlive) {
 		return;
 	}
-	xCoord -= 15;
+	degAng -= 10;
 	if (xCoord < 0)
 	{
-		xCoord = 800;
+		xCoord = 1024;
 	}
 }
-void Ship::moveShipRight() {
+void Ship::moveShipRight(void) {
 	if (!isAlive) {
 		return;
 	}
-	xCoord += 15;
-	if (xCoord > 800)
+	degAng += 10;
+	if (xCoord > 1024)
 	{
 		xCoord = 0;
 	}
 }
-void Ship::moveShipUp() {
+void Ship::moveShipUp(void) {
 	if (!isAlive) {
 		return;
 	}
@@ -146,12 +161,55 @@ void Ship::moveShipUp() {
 		yCoord -= 15;
 	}
 }
-void Ship::moveShipDown() {
+void Ship::moveShipDown(void) {
 	if (!isAlive) {
 		return;
 	}
 	if (yCoord < 570) {
 		yCoord += 15;
+	}
+}
+
+void Ship::flyShip(void)
+{
+	double ang = degAng * Pi / 180;
+	double s = sin(ang);
+	double c = cos(ang);
+
+	if ((0!= FsGetKeyState(FSKEY_UP)) || (0!=FsGetKeyState(FSKEY_W)))
+	{
+		velY -= 0.3 * c;
+		velX += 0.3 * s;
+
+		// ... existing flame drawing code ...
+
+		// Add thrusting effect
+		int numFlames = 200;  // number of flames to generate
+		glBegin(GL_LINES);
+		for (int i = 0; i < numFlames; ++i)
+		{
+			// Randomize the color to shades of red and orange
+			unsigned char red = 200 + rand() % 56;  // 200 to 255
+			unsigned char green = 50 + rand() % 56; // 50 to 105
+			unsigned char blue = 0;                 // 0
+			glColor3ub(red, green, blue);
+			// Calculate the start point for flame (back of the spaceship)
+			int randstart = rand() % width;
+			int xf1 = xCoord - width * c / 2 - (height * .5 + finHeight) * s + randstart * c; // Adjusted for center reference
+			int yf1 = yCoord - width * s / 2 + (height * .5 + finHeight) * c + randstart * s; // Adjusted for center reference
+			// Randomize the length and direction of the flame lines
+			int length = rand() % 20 + 10;  // flame length between 10 and 30 (adjust as needed)
+			double flameAngle = ang + (rand() % 20 - 10) * Pi / 180; // Random angle deviation
+			double flameS = sin(flameAngle);
+			double flameC = cos(flameAngle);
+			// Calculate the end point of the line
+			int xf2 = xf1 - flameS * length;
+			int yf2 = yf1 + length * flameC;
+			// Draw the line
+			glVertex2i(xf1, yf1);
+			glVertex2i(xf2, yf2);
+		}
+		glEnd();
 	}
 }
 
@@ -191,46 +249,55 @@ void Ship::checkCollisionWithOtherShipMissiles(Ship& otherShip) {
 }
 
 void Ship::update(int key, Ship& otherShip) {
+	if (xCoord < 0)
+	{
+		xCoord += 1024;
+	}
+	else if (xCoord >= 1024)
+	{
+		xCoord -= 1024;
+	}
+
+	if (yCoord < 0)
+	{
+		yCoord += 1024;
+	}
+	else if (yCoord >= 1024)
+	{
+		yCoord -= 1024;
+	}
+
+	xCoord += velX;
+	yCoord += velY;
 	if (playerNumber == 1) {
-		if (key == FSKEY_ESC) {
+		if (0 != FsGetKeyState(FSKEY_ESC)) {
 			return;
 		}
-		switch (key)
-		{
-		case FSKEY_LEFT:
+		if (0 != FsGetKeyState(FSKEY_LEFT)) {
 			moveShipLeft();
-			return;
-		case FSKEY_RIGHT:
+		}
+		if (0 != FsGetKeyState(FSKEY_RIGHT)) {
 			moveShipRight();
-			return;
-		case FSKEY_UP:
-			moveShipUp();
-			return;
-		case FSKEY_DOWN:
-			moveShipDown();
-			return;
-		case FSKEY_SPACE:
+		}
+		if (0 != FsGetKeyState(FSKEY_UP)) {
+			flyShip();
+		}
+		if (key == FSKEY_SPACE) {
 			triggerMissile();
-			return;
 		}
 	}
 	else {
-		switch (key) {
-		case FSKEY_A:
+		if (0 != FsGetKeyState(FSKEY_A)) {
 			moveShipLeft();
-			return;
-		case FSKEY_D:
+		}
+		if (0 != FsGetKeyState(FSKEY_D)) {
 			moveShipRight();
-			return;
-		case FSKEY_W:
-			moveShipUp();
-			return;
-		case FSKEY_S:
-			moveShipDown();
-			return;
-		case FSKEY_Q:
+		}
+		if (0 != FsGetKeyState(FSKEY_W)) {
+			flyShip();
+		}
+		if (key == FSKEY_Q) {
 			triggerMissile();
-			return;
 		}
 	}
 	checkCollisionWithOtherShipMissiles(otherShip);

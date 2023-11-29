@@ -8,7 +8,7 @@
 
 int main(void) {
 	int x1 = 200, y1 = 550, x2 = 600, y2 = 550;
-	int windowWidth = 800, windowHeight = 600;
+	int windowWidth = 1024, windowHeight = 1024;
 	int numberOfPlayers;
 	Ship ships[2];
 	while (true) {
@@ -40,16 +40,16 @@ int main(void) {
 		}
 		ships[0].update(key, ships[1]);
 		ships[1].update(key, ships[0]);
+		FsSwapBuffers();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/*ships[0].CheckCollisionWithOtherShip(ships[1]);
 		ships[1].CheckCollisionWithOtherShip(ships[0]);*/
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		ships[0].draw();
 		ships[1].draw();
 
-		FsSwapBuffers();
 		FsSleep(20);
 	}
 	for (auto& S : ships) {

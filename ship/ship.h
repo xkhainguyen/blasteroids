@@ -8,7 +8,8 @@
 
 class Missile {
 public:
-	int xCoord, yCoord, velocity = -10;
+	int xCoord, yCoord, velocity = -20;
+	double startingDegreeAngle;
 	bool isActive = false;
 	int size = 10;
 
@@ -31,7 +32,11 @@ public:
 	int maxXCoord, maxYCoord;
 	int friendlyFire = 0;
 
-	int width = 15, height = 10;
+	int degAng = 0;
+	double velX = 0, velY = 0;
+	int width = 10.0, height = 20.0;
+	int noseHeight = 5.0, finHeight = 5.0, finWidth = 5.0;
+
 	void drawPlayer();
 	void shootMissile();
 	void triggerMissile();
@@ -45,6 +50,7 @@ public:
 	void moveShipRight(void);
 	void moveShipUp(void);
 	void moveShipDown(void);
+	void flyShip(void);
 	void update(int key, Ship& otherShip);
 	void draw(void);
 };
