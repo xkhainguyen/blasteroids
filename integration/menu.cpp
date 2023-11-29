@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "fssimplewindow.h"
 #include "ysglfontdata.h"
+#include "background.h"
 
 void Button::Draw()
 {
@@ -56,7 +57,7 @@ void Dropdown::setMsgs(std::vector<std::string> new_msgs)
 void Dropdown::expand(int lb, int mb,int rb,int mx,int my,int evt)
 {
     int nm=messages.size();
-    glColor3f(0,0,0);
+    glColor3f(255,255,255);
     glBegin(GL_LINE_LOOP);
     glVertex2i(b1.x,b1.y+b1.h);
     glVertex2i(b1.x-drop_wid,b1.y+b1.h);
@@ -77,7 +78,7 @@ void Dropdown::expand(int lb, int mb,int rb,int mx,int my,int evt)
             glVertex2i(v1x+drop_wid-3,v1y+20);
             glVertex2i(v1x,v1y+20);
             glEnd();
-            glColor3f(0,0,0);
+            glColor3f(255,255,255);
             if(FSMOUSEEVENT_LBUTTONDOWN==evt) 
             {
                 closed_message=messages[i];
@@ -96,6 +97,7 @@ void::Dropdown::Draw(int lb, int mb,int rb,int mx,int my,int evt)
     {
         expand(lb,mb,rb,mx,my,evt);
     }
+    glColor3ub(255,255,255);
     glRasterPos2d(b1.x-drop_wid+3,b1.y+20);
     YsGlDrawFontBitmap12x16(closed_message.c_str());
     glBegin(GL_LINE_LOOP);
@@ -171,7 +173,9 @@ int GameMenu::RunOneStep()
             players_dd.b1.setMsg("V");             
         }
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    DrawBackground();
     start.Draw();
+    glColor3ub(255,255,255);
     glRasterPos2d(200,270);
     YsGlDrawFontBitmap10x14("Number of players");
     players_dd.Draw(lb,mb,rb,mx,my,evt);
