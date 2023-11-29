@@ -1,7 +1,6 @@
 #include "menu.h"
 #include "fssimplewindow.h"
 #include "ysglfontdata.h"
-#include "background.h"
 
 void Button::Draw()
 {
@@ -32,11 +31,79 @@ void Button::set(int _x,int _y,int _h,int _w,int _r,int _g, int _b,std::string _
     msg=_msg;
 }
 
+void Button::setMsg(std::string new_msg)
+{
+    msg=new_msg;
+}
+
 void Button::SetColor(int _r, int _g, int _b)
 {
     r=_r;
     b=_b;
     g=_g;
+}
+
+bool Dropdown::check_mouse_posn(int mx,int my,int box_x, int box_y, int box_w, int box_h)
+{
+    return (mx>box_x && my>box_y && mx<box_x+box_w && my<box_y+box_h);
+}
+
+void Dropdown::setMsgs(std::vector<std::string> new_msgs)
+{
+    messages=new_msgs;
+}
+
+void Dropdown::expand(int lb, int mb,int rb,int mx,int my,int evt)
+{
+    int nm=messages.size();
+    glColor3f(0,0,0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(b1.x,b1.y+b1.h);
+    glVertex2i(b1.x-drop_wid,b1.y+b1.h);
+    glVertex2i(b1.x-drop_wid,b1.y+b1.h+20*nm);
+    glVertex2i(b1.x,b1.y+b1.h+20*nm);
+    glEnd(); 
+    for (int i=0; i<nm;++i)
+    {
+        glRasterPos2d(b1.x-drop_wid+3,b1.y+b1.h+(i*20)+12);
+        int v1x=b1.x-drop_wid+3;
+        int v1y=b1.y+b1.h+(i*20);
+        if(check_mouse_posn(mx,my,v1x,v1y,drop_wid-3,20))
+        {
+            glColor3f(0,255,255);
+            glBegin(GL_QUADS);
+            glVertex2i(v1x,v1y);
+            glVertex2i(v1x+drop_wid-3,v1y);
+            glVertex2i(v1x+drop_wid-3,v1y+20);
+            glVertex2i(v1x,v1y+20);
+            glEnd();
+            glColor3f(0,0,0);
+            if(FSMOUSEEVENT_LBUTTONDOWN==evt) 
+            {
+                closed_message=messages[i];
+                return_val=i+1;
+                drop_state="closed";
+            }
+        }
+        YsGlDrawFontBitmap12x16(messages[i].c_str());
+    }  
+}
+
+void::Dropdown::Draw(int lb, int mb,int rb,int mx,int my,int evt)
+{
+    b1.Draw();
+    if ("open"==drop_state)
+    {
+        expand(lb,mb,rb,mx,my,evt);
+    }
+    glRasterPos2d(b1.x-drop_wid+3,b1.y+20);
+    YsGlDrawFontBitmap12x16(closed_message.c_str());
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(b1.x-drop_wid,b1.y);
+    glVertex2i(b1.x,b1.y);
+    glVertex2i(b1.x,b1.y+b1.h);
+    glVertex2i(b1.x-drop_wid,b1.y+b1.h);
+    glEnd();
 }
 
 bool GameMenu::check_mouse_posn(int mx,int my,int box_x, int box_y, int box_w, int box_h)
@@ -46,12 +113,14 @@ bool GameMenu::check_mouse_posn(int mx,int my,int box_x, int box_y, int box_w, i
 
 void GameMenu::SetButtons()
 {
-    start.set(335,325,50,130,255,0,0,"Start Game");
-    one_p.set(70,70,50,130,255,0,0,"One Player");
-    two_p.set(600,70,50,130,255,0,0,"Two Player");
-    easy.set(70,200,50,60,255,0,0,"Easy");
-    medium.set(350,200,50,100,255,0,0,"Medium");
-    hard.set(670,200,50,60,255,0,0,"Hard");
+    start.set(400,300,50,130,255,0,0,"Start Game");
+    players_dd.b1.set(350,300,50,20,0,255,0,"v");
+    diff_dd.b1.set(150,300,50,20,0,255,0,"v");
+    std::vector<std::string> diffs={"easy","medium","hard"};
+    std::vector<std::string> players={"one player","two player"};
+    diff_dd.setMsgs(diffs);
+    players_dd.setMsgs(players);
+    players_dd.drop_wid=125;
 }
 
 int GameMenu::RunOneStep()
@@ -62,26 +131,6 @@ int GameMenu::RunOneStep()
     auto key=FsInkey();
     int evt=FsGetMouseEvent(lb,mb,rb,mx,my);
     start.SetColor(255,0,0);
-    if(false==easy.pushed)
-    {
-        easy.SetColor(255,0,0);
-    }
-    if(false==medium.pushed)
-    {
-        medium.SetColor(255,0,0);
-    }
-    if(false==hard.pushed)
-    {
-        hard.SetColor(255,0,0);
-    }
-    if(false==one_p.pushed)
-    {
-        one_p.SetColor(255,0,0);
-    }
-    if(false==two_p.pushed)
-    {
-        two_p.SetColor(255,0,0);
-    }
     if (FSKEY_ESC==key)
     {
         val=BMENU_QUIT;
@@ -96,96 +145,44 @@ int GameMenu::RunOneStep()
             val=BMENU_Start;
         }
     }
-    if (check_mouse_posn(mx,my,easy.x,easy.y,easy.w,easy.h))
-    {
-        easy.SetColor(255,255,0);
-        medium.SetColor(255,0,0);
-        hard.SetColor(255,0,0);
-        if(FSMOUSEEVENT_LBUTTONDOWN==evt || FSMOUSEEVENT_RBUTTONDOWN==evt)
+    if(diff_dd.check_mouse_posn(mx,my,diff_dd.b1.x, diff_dd.b1.y, diff_dd.b1.w, diff_dd.b1.h) && FSMOUSEEVENT_LBUTTONDOWN==evt && "closed"==diff_dd.drop_state ||
+        diff_dd.check_mouse_posn(mx,my,diff_dd.b1.x, diff_dd.b1.y, diff_dd.b1.w, diff_dd.b1.h)&& FSMOUSEEVENT_RBUTTONDOWN==evt && "closed"==diff_dd.drop_state)
         {
-            easy.pushed=true;
-            hard.pushed=false;
-            medium.pushed=false;
-            difficulty='e';
+            diff_dd.drop_state="open";
+            diff_dd.b1.setMsg("^");
         }
-    }
-    if (check_mouse_posn(mx,my,medium.x,medium.y,medium.w,medium.h))
-    {
-        easy.SetColor(255,0,0);
-        medium.SetColor(255,255,0);
-        hard.SetColor(255,0,0);
-        if(FSMOUSEEVENT_LBUTTONDOWN==evt || FSMOUSEEVENT_RBUTTONDOWN==evt)
+    else if(diff_dd.check_mouse_posn(mx,my,diff_dd.b1.x, diff_dd.b1.y, diff_dd.b1.w, diff_dd.b1.h) && FSMOUSEEVENT_LBUTTONDOWN==evt && "open"==diff_dd.drop_state ||
+            diff_dd.check_mouse_posn(mx,my,diff_dd.b1.x, diff_dd.b1.y, diff_dd.b1.w, diff_dd.b1.h) && FSMOUSEEVENT_RBUTTONDOWN==evt && "open"==diff_dd.drop_state)
         {
-            medium.pushed=true;
-            easy.pushed=false;
-            hard.pushed=false;
-            difficulty='m';
-            
+            diff_dd.drop_state="closed";
+            diff_dd.b1.setMsg("V");             
         }
-    }
-    if (check_mouse_posn(mx,my,hard.x,hard.y,hard.w,hard.h))
-    {
-        hard.SetColor(255,255,0);
-        easy.SetColor(255,0,0);
-        medium.SetColor(255,0,0);
-        if(FSMOUSEEVENT_LBUTTONDOWN==evt || FSMOUSEEVENT_RBUTTONDOWN==evt)
+
+    if(players_dd.check_mouse_posn(mx,my,players_dd.b1.x, players_dd.b1.y, players_dd.b1.w, players_dd.b1.h) && FSMOUSEEVENT_LBUTTONDOWN==evt && "closed"==players_dd.drop_state ||
+        players_dd.check_mouse_posn(mx,my,players_dd.b1.x, players_dd.b1.y, players_dd.b1.w, players_dd.b1.h)&& FSMOUSEEVENT_RBUTTONDOWN==evt && "closed"==players_dd.drop_state)
         {
-            hard.pushed=true;
-            easy.pushed=false;
-            medium.pushed=false;
-            difficulty='h';
+            players_dd.drop_state="open";
+            players_dd.b1.setMsg("^");
         }
-    }
-    if (check_mouse_posn(mx,my,one_p.x,one_p.y,one_p.w,one_p.h))
-    {
-        one_p.SetColor(255,255,0);
-        two_p.SetColor(255,0,0);
-        if(FSMOUSEEVENT_LBUTTONDOWN==evt || FSMOUSEEVENT_RBUTTONDOWN==evt)
+    else if(players_dd.check_mouse_posn(mx,my,players_dd.b1.x, players_dd.b1.y, players_dd.b1.w, players_dd.b1.h) && FSMOUSEEVENT_LBUTTONDOWN==evt && "open"==players_dd.drop_state ||
+            players_dd.check_mouse_posn(mx,my,players_dd.b1.x, players_dd.b1.y, players_dd.b1.w, players_dd.b1.h)&& FSMOUSEEVENT_RBUTTONDOWN==evt && "open"==players_dd.drop_state)
         {
-            one_p.pushed=true;
-            two_p.pushed=false;
-            isMultiplayer=false;
+            players_dd.drop_state="closed";
+            players_dd.b1.setMsg("V");             
         }
-    }
-    if (check_mouse_posn(mx,my,two_p.x,two_p.y,two_p.w,two_p.h))
-    {
-        one_p.SetColor(255,0,0);
-        two_p.SetColor(255,255,0);
-        if(FSMOUSEEVENT_LBUTTONDOWN==evt || FSMOUSEEVENT_RBUTTONDOWN==evt)
-        {
-            two_p.pushed=true;
-            one_p.pushed=false;
-            isMultiplayer=true;
-        } 
-    }
-    if(true==easy.pushed)
-    {
-        easy.SetColor(0,255,0);
-    }
-    if(true==medium.pushed)
-    {
-        medium.SetColor(0,255,0);
-    }
-    if(true==hard.pushed)
-    {
-        hard.SetColor(0,255,0);
-    }
-    if(true==one_p.pushed)
-    {
-        one_p.SetColor(0,255,0);
-    }
-    if(true==two_p.pushed)
-    {
-        two_p.SetColor(0,255,0);
-    }
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    DrawBackground();
     start.Draw();
-    one_p.Draw();
-    two_p.Draw();
-    easy.Draw();
-    medium.Draw();
-    hard.Draw();
+    glRasterPos2d(200,270);
+    YsGlDrawFontBitmap10x14("Number of players");
+    players_dd.Draw(lb,mb,rb,mx,my,evt);
+    glRasterPos2d(50,270);
+    YsGlDrawFontBitmap10x14("Difficulty");
+    diff_dd.Draw(lb,mb,rb,mx,my,evt);
     FsSwapBuffers();
+    difficulty=diff_dd.return_val;
+    if (1==players_dd.return_val)
+        isMultiplayer=false;
+    else if(2==players_dd.return_val)
+        isMultiplayer=true;
     return val;
 }
