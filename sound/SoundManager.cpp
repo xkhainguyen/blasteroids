@@ -3,15 +3,15 @@
 
 void SoundManager::Initialize(void)
 {
-    if(YSOK!=blaster.LoadWav("blaster.wav"))
+    if(YSOK!=blaster.LoadWav("blaster2.wav"))
     {
         std::cout << "Cannot load blaster.wav" << std::endl;
     }
-    if(YSOK!=explosion.LoadWav("explosion.wav"))
+    if(YSOK!=explosion.LoadWav("explosion2.wav"))
     {
         std::cout << "Cannot load explosion.wav" << std::endl;
     }
-    if(YSOK!=rocketThrust.LoadWav("rocketThrust.wav"))
+    if(YSOK!=rocketThrust.LoadWav("rocketThrust2.wav"))
     {
         std::cout << "Cannot load rocketThrust.wav" << std::endl;
     }
@@ -30,23 +30,23 @@ void SoundManager::PlayMusic(void)
     player.PlayBackground(music);
 }
 
-void SoundManager::PlaySound(bool shipFiredMissile, bool missileHitAsteroid, bool rocketEngineOn, bool missileHitShip)
+void SoundManager::PlayThrust(void)
 {
-    if (shipFiredMissile)
-    {
-        player.PlayOneShot(blaster);
-    }
-    else if (missileHitAsteroid)
-    {
-        player.PlayOneShot(explosion);
-    }
-    else if (rocketEngineOn)
-    {
-        player.PlayOneShot(rocketThrust);
-    }
-    else if (missileHitShip)
-    {
-        player.PlayOneShot(tink);
-    }
+    player.PlayOneShot(rocketThrust);
+}
+
+void SoundManager::PlayTink(void)
+{
+    player.PlayOneShot(tink);
+}
+
+void SoundManager::PlayExplosion(void)
+{
+    player.PlayOneShot(explosion);
+}
+
+void SoundManager::PlayShoot(void)
+{
+    player.PlayOneShot(blaster);
 }
 

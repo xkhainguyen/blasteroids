@@ -7,7 +7,6 @@ class SoundManager
 {
 public:
     YsSoundPlayer player;
-    YsSoundPlayer player2;
     YsSoundPlayer::SoundData blaster;
     YsSoundPlayer::SoundData explosion;
     YsSoundPlayer::SoundData rocketThrust;
@@ -16,7 +15,10 @@ public:
 
     void Initialize(void);
     void PlayMusic(void);
-    void PlaySound(bool shipFiredMissile, bool missileHitAsteroid, bool rocketEngineOn, bool missileHitShip);
+    void PlayThrust(void);
+    void PlayTink(void);
+    void PlayExplosion(void);
+    void PlayShoot(void);
 };
 
 #endif // SOUNDMANAGER_H
