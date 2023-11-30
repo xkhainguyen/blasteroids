@@ -14,6 +14,10 @@
 #include "PlayerStats.hpp"
 #include <cstdlib>
 
+// Windows compiler:
+// cl /EHsc integrate.cpp menu.cpp fssimplewindow.cpp ysglfontdata.c yssimplesound.cpp mmlplayer.cpp 
+// background.cpp asteroid.cpp asteroid_manager.cpp ship.cpp SoundManager.cpp PlayerStats.cpp
+
 
 
 class Game {
@@ -24,18 +28,19 @@ public:
 	int friendlyFire = 0;
 	int windowWidth = 800, windowHeight = 600;
     int numPlayers;
-    int difficulty_level = 1;
+    int difficultySetting = 1;
+    int maxDifficulty = 3;
+    int maxLevel = 5;
+    int asteriods_per_level[6] = {1, 2, 4, 6, 8, 10};
+
 
 
     GameMenu menu;
     SoundManager soundManager;   
     AsteroidManager manager;
     GameSummary gameSummary;
-    
-
-    // TODO: Two ships are currently hardcoded - needs to be updated 
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
-    PlayerStats stats[2] = { PlayerStats(3), PlayerStats(3)};
+    PlayerStats stats[2] = { PlayerStats(maxLevel), PlayerStats(maxLevel)};
 
 
     Game() {
@@ -66,6 +71,9 @@ public:
                 FsPollDevice();
                 while (!FsGetKeyState(FSKEY_O)) {
                     FsPollDevice();
+                    if (FsGetKeyState(FSKEY_ESC)) {
+                        break;
+            }
                 }
             }
             // Update game state
@@ -74,13 +82,17 @@ public:
             // Render game frame
             renderFrame();
 
+            // Check for level complete conditions
+            checkLevelUp();
+
             // Check for game over conditions
             isGameOver = checkGameOver();
         }
+
         // Display end game summary and credits
+        displayEndGameSummary();
         while (!FsGetKeyState(FSKEY_ESC)) {
             FsPollDevice();
-            displayEndGameSummary();
         }
 
     }
@@ -95,19 +107,26 @@ public:
             {
                 if (true==menu.isMultiplayer)
                 {
-                    std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are two players" << std::endl;
+                    std::cout<<"The game has started, difficulty is: "<<menu.difficulty<< ", there are two players" << std::endl;
                 }
                 else
                 {
-                    std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there is one player" << std::endl;
+                    std::cout<<"The game has started, difficulty is: "<<menu.difficulty<< ", there is one player" << std::endl;
                 }
                 break;
             }
             else if (GameMenu::BMENU_QUIT==menu_sel)
             {
-                std::cout<<"the user has exited the game" << std::endl;
+                std::cout<<"Game exited" << std::endl;
                 break;
             }
+        }
+    }
+
+
+    void checkDifficulty() {
+        if (difficultySetting < 1 || difficultySetting > maxDifficulty) {
+            difficultySetting = 1;
         }
     }
 
@@ -117,9 +136,9 @@ public:
         // Initialize ship, asteroids, & sounds
 
         // Initialize asteriods 
-        difficulty_level = convertDifficultyCharToInt(menu.difficulty);
-        int asteroid_count = 2;
-        manager.initialize(difficulty_level, 800, 600, asteroid_count);
+        difficultySetting = menu.difficulty;
+        checkDifficulty();
+        manager.initialize(difficultySetting, 800, 600, asteriods_per_level[currentLevel]);
         std::cout << "Asteroids: " << manager.getCurrentAsteroids().size() << std::endl;
 
         
@@ -145,59 +164,31 @@ public:
         soundManager.Initialize();
         soundManager.player.Start();
         soundManager.PlayMusic();
+
         
-        gameSummary.Initialize(numPlayers, 3, difficulty_level);
+        gameSummary.Initialize(numPlayers, 3, difficultySetting);
         
         for (auto& stat : stats) {
             stat.startTimeCounter(currentLevel);
         }
 
-
+        std::cout<<"Game initialization complete" << std::endl;
     }
 
-    int convertDifficultyCharToInt(char difficultyChar) {
-        switch (difficultyChar) {
-            case 'e':
-                return 1;
-            case 'm':
-                return 2;
-            case 'h':
-                return 3;
-            default:
-                std::cerr << "Invalid difficulty character" << std::endl;
-                return 1; // or any other default/error value
-        }
-    }
 
 
     void renderFrame() {
         // Render background, ship, asteroids
-		
-		// friendlyFire += ships[0].CheckCollisionWithOtherShipMissiles(ships[1]);
-		// friendlyFire += ships[1].CheckCollisionWithOtherShipMissiles(ships[0]);
         FsSwapBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         DrawBackground();
         
         ships[0].draw();
         ships[1].draw();
-		// ships[0].DrawPlayer();
-		// ships[1].DrawPlayer();
 
-		// for (auto& ship : ships) {
-		// 	ship.ShootMissile();
-		// }
-
-        // ASTEROIDS
         manager.drawAsteroids();
     
-
-        // SOUND, New note: UpdateStream not needed anymore
-        // soundManager.UpdateStream();
-
-        // FsSwapBuffers();
         FsSleep(25);
-
     }
 
 
@@ -205,7 +196,6 @@ public:
         // Update asteroids
         manager.updateAsteroids();
 
-        // TODO: Update ship ----- currently in renderFrame
         FsPollDevice();
 		auto key = FsInkey();
 
@@ -241,8 +231,7 @@ public:
 
 
         /////////////////////// Check for collisions //////////////////////
-        // ship-asteroid, asteroid-missle, missle-ship
-        
+        // ship-asteroid and asteroid-missle
         size_t asteriod_counter = 0;
         
         for (auto& aster : manager.getCurrentAsteroids()) {
@@ -286,49 +275,103 @@ public:
 
    bool checkGameOver() {
         // Check if game over conditions are met
-        // Ship dead :(
-        // need to adjest to check for multiple ship
 
+        // Ship dead :(
         if (!ships[0].isAlive & !ships[1].isAlive) {
             std::cout<<"Game over!! The ship died!!" << std::endl;
             return true;
         }
 
-        
-
-        // Asteroids 
-        size_t noAsteroids = 0;
-        if (noAsteroids != manager.getCurrentAsteroids().size()) {
-            return false;
-        }
-        else {
-            std::cout<< "Game over!! All the asteriods are gone!!!" << std::endl;
+        // All levels complete
+        if (currentLevel == maxLevel){
+            std::cout<<"Game over!! All levels completed!" << std::endl;
             return true;
-        }
 
+        }
+        
         return false;
 
     }
 
-void displayEndGameSummary() {
-    // Display summary statistics and credits
-    for (int player = 0; player < numPlayers; ++player) {
-        if (ships[player].isAlive) {
-            stats[player].saveTimeCounter(currentLevel);
+    void checkLevelUp() {
+        // Check if any asteroids are left
+        size_t noAsteroids = 0;
+        if (noAsteroids == manager.getCurrentAsteroids().size()) {
+            std::cout<< "Level up!! All the asteriods are gone!!!" << std::endl;
+            currentLevel = currentLevel + 1;
+            InitializeNextLevel();
         }
-        gameSummary.showStats(stats[player], currentLevel, player);   
-    }
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    DrawBackground();
 
-    glColor3ub(255, 0, 255);
-    glRasterPos2i(100,100);
-    YsGlDrawFontBitmap12x16("Game over");
-
-    FsSwapBuffers();
-    FsSleep(25);
-    // std::cout<< "Print game end summary" << std::endl;
     }
+
+    void InitializeNextLevel() {
+
+        for (int player = 0; player < numPlayers; ++player) {
+            if (ships[player].isAlive) {
+                // Need summary stats here 
+                // stats[player].saveTimeCounter(currentLevel-1);
+                // gameSummary.showStats(stats[player], currentLevel-1, player); 
+                // stats[player].startTimeCounter(currentLevel);
+            }
+
+        }
+
+        manager.initialize(difficultySetting, 800, 600, asteriods_per_level[currentLevel]);
+        std::cout<< "New asteriods intialized. #: " << manager.getCurrentAsteroids().size() << std::endl;
+        std::cout << "Current level: " << currentLevel << std::endl;
+
+        // Deactivate all missles 
+        for (auto& ship : ships) {   
+            for (auto& missile : ship.missiles) {  
+                if (missile.isActive){
+                    missile.isActive = false;
+                    };
+                }
+            }
+        
+        // std::cout<< "Ship missles reloaded" << std::endl;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        DrawBackground();
+
+        glColor3ub(117, 255, 255);
+        glRasterPos2i(300,100);
+        YsGlDrawFontBitmap12x16("Level Complete");
+        glRasterPos2i(200,200);
+        YsGlDrawFontBitmap12x16("Press enter to start new level");
+
+        FsSwapBuffers();
+        FsSleep(25);
+
+        // Display mid game summary
+        while (!FsGetKeyState(FSKEY_ESC)) {
+            FsPollDevice();
+            if (FsGetKeyState(FSKEY_ENTER)) {
+                break;
+            }
+        }
+        
+    }
+
+    void displayEndGameSummary() {
+        // Display summary statistics and credits
+        for (int player = 0; player < numPlayers; ++player) {
+            if (ships[player].isAlive) {
+                stats[player].saveTimeCounter(currentLevel);
+            }
+            gameSummary.showEndgame(stats[player], currentLevel, player);   
+        }
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        DrawBackground();
+
+        glColor3ub(255, 0, 255);
+        glRasterPos2i(300,100);
+        YsGlDrawFontBitmap12x16("Game over");
+
+        FsSwapBuffers();
+        FsSleep(25);
+        // std::cout<< "Print game end summary" << std::endl;
+        }
 
 };
 

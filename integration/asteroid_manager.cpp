@@ -34,7 +34,7 @@ void AsteroidManager::setDifficulty(int level) {
     asteroids.clear();
 
     // Initialize new asteroids
-    for (int i = 0; i <= numAsteroids; i++) {
+    for (int i = 0; i < numAsteroids; i++) {
         initializeAsteroid(0.0, 0.0, false, 0);
     }
 }

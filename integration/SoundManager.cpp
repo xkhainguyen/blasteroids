@@ -3,7 +3,7 @@
 
 void SoundManager::Initialize(void)
 {
-    if(YSOK!=blaster.LoadWav("blaster2.wav"))
+    if(YSOK!=blaster.LoadWav("blaster.wav"))
     {
         std::cout << "Cannot load blaster.wav" << std::endl;
     }

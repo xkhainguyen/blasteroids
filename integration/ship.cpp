@@ -137,7 +137,7 @@ void Ship::moveShipLeft(void)
 	if (!isAlive) {
 		return;
 	}
-	degAng -= 10;
+	degAng -= 5;
 	if (xCoord < 0)
 	{
 		xCoord = 800;
@@ -148,7 +148,7 @@ void Ship::moveShipRight(void) {
 	if (!isAlive) {
 		return;
 	}
-	degAng += 10;
+	degAng += 5;
 	if (xCoord > 800)
 	{
 		xCoord = 0;

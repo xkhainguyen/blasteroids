@@ -11,7 +11,7 @@ public:
 	int xCoord, yCoord, velocity = -20;
 	double startingDegreeAngle;
 	bool isActive = false;
-	int size = 10;
+	int size = 15;
 
 	void activateMissile(int startingx, int startingy);
 	void shoot();
@@ -23,8 +23,8 @@ class Ship {
 public:
 	Ship() : xCoord(0), yCoord(0), maxXCoord(800), maxYCoord(600), playerNumber(0) {}
 	Ship(int initialX, int initialY, int maxX, int maxY, int playerNum) : xCoord(initialX), yCoord(initialY), maxXCoord(maxX), maxYCoord(maxY), playerNumber(playerNum) {}
-	Missile missiles[10];
-	int numOfMissiles = 10;
+	Missile missiles[15];
+	int numOfMissiles = 15;
 	int playerNumber;
 	int xCoord, yCoord, missilesShot = 0;
 	bool isAlive = true;
