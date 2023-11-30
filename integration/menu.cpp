@@ -84,6 +84,7 @@ void Dropdown::expand(int lb, int mb,int rb,int mx,int my,int evt)
                 closed_message=messages[i];
                 return_val=i+1;
                 drop_state="closed";
+                b1.setMsg("v");
             }
         }
         YsGlDrawFontBitmap12x16(messages[i].c_str());

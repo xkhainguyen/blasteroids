@@ -23,7 +23,7 @@ public:
     int x1 = 200, y1 = 550, x2 = 600, y2 = 550;
 	int friendlyFire = 0;
 	int windowWidth = 800, windowHeight = 600;
-    int numPlayers =2;
+    int numPlayers;
     int difficulty_level = 1;
 
 
@@ -130,16 +130,22 @@ public:
             numPlayers = 1;
         }
 
-
-
-
         // Initialize ship
-
+        if (numPlayers == 2) {
+			ships[0] = Ship(x1, y1, windowWidth, windowHeight, 1);
+			ships[1] = Ship(x2, y2, windowWidth, windowHeight, 2);
+		}
+		else if (numPlayers == 1) {
+			ships[0] = Ship(400, 550, windowWidth, windowHeight, 1);
+			ships[1].isAlive = false;
+		}
 
 
         // Initialize sound
         soundManager.Initialize();
-
+        soundManager.player.Start();
+        soundManager.PlayMusic();
+        
         gameSummary.Initialize(numPlayers, 3, difficulty_level);
         
         for (auto& stat : stats) {
@@ -166,78 +172,30 @@ public:
 
     void renderFrame() {
         // Render background, ship, asteroids
-		FsPollDevice();
-		auto key = FsInkey();
-
-        // SHIP 
-		switch (key)
-		{
-		case FSKEY_LEFT:
-			ships[0].moveShipLeft();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_RIGHT:
-			ships[0].moveShipRight();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_UP:
-			ships[0].moveShipUp();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_DOWN:
-			ships[0].moveShipDown();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_SPACE:
-			ships[0].TriggerMissile();
-            soundManager.PlaySound(true, false, false, false);
-            stats[0].addOneBulletShot(currentLevel);
-			break;
-
-		case FSKEY_A:
-			ships[1].moveShipLeft();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_D:
-			ships[1].moveShipRight();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_W:
-			ships[1].moveShipUp();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_S:
-			ships[1].moveShipDown();
-            soundManager.PlaySound(false, false, true, false);
-			break;
-		case FSKEY_Q:
-			ships[1].TriggerMissile();
-            soundManager.PlaySound(true, false, false, false);
-            stats[1].addOneBulletShot(currentLevel);
-			break;
-		}
-
-		friendlyFire += ships[0].CheckCollisionWithOtherShipMissiles(ships[1]);
-		friendlyFire += ships[1].CheckCollisionWithOtherShipMissiles(ships[0]);
-
+		
+		// friendlyFire += ships[0].CheckCollisionWithOtherShipMissiles(ships[1]);
+		// friendlyFire += ships[1].CheckCollisionWithOtherShipMissiles(ships[0]);
+        FsSwapBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         DrawBackground();
+        
+        ships[0].draw();
+        ships[1].draw();
+		// ships[0].DrawPlayer();
+		// ships[1].DrawPlayer();
 
-		ships[0].DrawPlayer();
-		ships[1].DrawPlayer();
-
-		for (auto& ship : ships) {
-			ship.ShootMissile();
-		}
+		// for (auto& ship : ships) {
+		// 	ship.ShootMissile();
+		// }
 
         // ASTEROIDS
         manager.drawAsteroids();
     
 
-        // SOUND 
-        soundManager.UpdateStream();
+        // SOUND, New note: UpdateStream not needed anymore
+        // soundManager.UpdateStream();
 
-        FsSwapBuffers();
+        // FsSwapBuffers();
         FsSleep(25);
 
     }
@@ -248,6 +206,38 @@ public:
         manager.updateAsteroids();
 
         // TODO: Update ship ----- currently in renderFrame
+        FsPollDevice();
+		auto key = FsInkey();
+
+        if (key == FSKEY_ESC) 
+        {
+			return;
+		}
+		ships[0].update(key, ships[1]);
+		ships[1].update(key, ships[0]);
+
+        // SHIP 
+		switch (key)
+		{
+		case FSKEY_UP:
+			// ships[0].moveShipUp();
+            soundManager.PlayThrust();
+			break;
+		case FSKEY_SPACE:
+			// ships[0].TriggerMissile();
+            soundManager.PlayShoot();
+            stats[0].addOneBulletShot(currentLevel);
+			break;
+		case FSKEY_W:
+			// ships[1].moveShipUp();
+            soundManager.PlayThrust();
+			break;
+		case FSKEY_Q:
+			// ships[1].TriggerMissile();
+            soundManager.PlayShoot();
+            stats[1].addOneBulletShot(currentLevel);
+			break;
+		}
 
 
         /////////////////////// Check for collisions //////////////////////
@@ -261,7 +251,7 @@ public:
                 if (checkCollision(ship.xCoord, ship.yCoord, 15, aster.x, aster.y, aster.radius)){
                     if (ship.isAlive){
                         ship.isAlive = false;
-                        soundManager.PlaySound(false, false, false, true);
+                        soundManager.PlayExplosion();
                         stats[current_ship].saveTimeCounter(currentLevel);
                     }
                     
@@ -272,7 +262,7 @@ public:
                             if (checkCollision(missile.xCoord, missile.yCoord, 2, aster.x, aster.y, aster.radius)){
                                 missile.isActive = false;
                                 manager.destroyAsteroid(asteriod_counter);
-                                soundManager.PlaySound(false, true, false, false);
+                                soundManager.PlayTink();
                                 stats[current_ship].addOneAsteriodHit(currentLevel);
                             };
                         }

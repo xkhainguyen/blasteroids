@@ -2,23 +2,24 @@
 #define SOUNDMANAGER_H
 
 #include "yssimplesound.h"
-#include "mmlplayer.h"
 
 class SoundManager
 {
 public:
-    MMLSegmentPlayer mmlplayer;
     YsSoundPlayer player;
     YsSoundPlayer::SoundData blaster;
     YsSoundPlayer::SoundData explosion;
     YsSoundPlayer::SoundData rocketThrust;
     YsSoundPlayer::SoundData tink;
-    YsSoundPlayer::Stream stream;
-    YsSoundPlayer::SoundData nextWave;
+    YsSoundPlayer::SoundData music;
 
     void Initialize(void);
-    void UpdateStream(void);
-    void PlaySound(bool shipFiredMissile, bool missileHitAsteroid, bool rocketEngineOn, bool missileHitShip);
+    void PlayMusic(void);
+    void PlayThrust(void);
+    void PlayTink(void);
+    void PlayExplosion(void);
+    void PlayShoot(void);
 };
 
 #endif // SOUNDMANAGER_H
+
