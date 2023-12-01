@@ -41,7 +41,7 @@ void AsteroidManager::setDifficulty(int level) {
 
 void AsteroidManager::initializeAsteroid(double posX = 0, double posY = 0, bool isBreakup = false, int param = 0)
 {
-    std::uniform_real_distribution<> dis(-10.0 * difficultyLevel, 10.0 * difficultyLevel);
+    std::uniform_real_distribution<> dis(-2 * difficultyLevel, 2 * difficultyLevel);
     std::uniform_real_distribution<> disPos(0, mapHeight);
     std::uniform_real_distribution<> disRadius(10, 30);
 

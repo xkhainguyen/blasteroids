@@ -5,7 +5,7 @@
 int main() {
     FsOpenWindow(0, 0, 800, 600, 1);
 
-    int DIFFICULTY_LEVEL = 3;
+    int DIFFICULTY_LEVEL = 1;
     int ASTEROID_COUNT = 10;
 
     AsteroidManager manager = AsteroidManager();
