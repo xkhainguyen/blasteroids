@@ -12,10 +12,10 @@ class PlayerStats
 public:
     int numPlayers;
     int numLevels;
-    int *numAsteroidHitLevels;
-    int *numBulletShotLevels;
-    int *timeLevels;
-    int *scoreLevels;
+    std::vector<int> numAsteroidHitLevels;
+    std::vector<int> numBulletShotLevels ;
+    std::vector<int> timeLevels;
+    std::vector<int> scoreLevels;
     int numAsteroidHitTotal;
     int numBulletShotTotal;
     int timeTotal;
@@ -51,6 +51,6 @@ public:
     void Initialize(int numPlayers, int numLevels, int difficulty);
     int showStats(PlayerStats player, int level, int numPlayer);
     int showCredit();
-    int showEndgame(PlayerStats player, int level, int numPlayer);
+    void showEndgame(PlayerStats player, int level, int numPlayer);
 };
 

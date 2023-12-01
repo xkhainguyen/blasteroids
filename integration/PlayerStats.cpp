@@ -8,33 +8,20 @@ PlayerStats::PlayerStats(int numLevels)
 {
     this->numLevels = numLevels;
     this->numPlayers = 0;
-    this->numAsteroidHitLevels = new int[numLevels];
-    this->numBulletShotLevels = new int[numLevels];
-    this->timeLevels = new int[numLevels];
-    this->scoreLevels = new int[numLevels];
+    this->numAsteroidHitLevels.resize(numLevels,0);
+    this->numBulletShotLevels.resize(numLevels,0); 
+    this->timeLevels.resize(numLevels,0);
+    this->scoreLevels.resize(numLevels,0); 
     this->numAsteroidHitTotal = 0;
     this->numBulletShotTotal = 0;
     this->timeTotal = 0;
     this->scoreTotal = 0;
     this->startTime = 0;
     this->endTime = 0;
-
-    // init with zeros
-    for (int i = 0; i < numLevels; i++)
-    {
-        this->numAsteroidHitLevels[i] = 0;
-        this->numBulletShotLevels[i] = 0;
-        this->timeLevels[i] = 0;
-        this->scoreLevels[i] = 0;
-    }
 }
 
 PlayerStats::~PlayerStats()
 {
-    delete[] this->numAsteroidHitLevels;
-    delete[] this->numBulletShotLevels;
-    delete[] this->timeLevels;
-    delete[] this->scoreLevels;
 }
 
 int PlayerStats::addOneAsteriodHit(int level)
@@ -114,7 +101,7 @@ int GameSummary::showCredit()
     return 0;
 }
 
-int GameSummary::showEndgame(PlayerStats player, int level, int numPlayer)
+void GameSummary::showEndgame(PlayerStats player, int level, int numPlayer)
 {
     cout << "Player " << numPlayer << " stats for level " << level << endl;
     cout << "Number of Asteroid Hit: " << player.numAsteroidHitLevels[level] << endl;
@@ -125,5 +112,5 @@ int GameSummary::showEndgame(PlayerStats player, int level, int numPlayer)
     cout << "Total Number of Bullet Shot: " << player.numBulletShotTotal << endl;
     cout << "Total Time: " << player.timeTotal << endl;
     cout << "Total Score: " << player.scoreTotal << endl;
-    return 0;
+   // return 0;
 }
