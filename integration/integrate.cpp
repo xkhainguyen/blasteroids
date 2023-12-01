@@ -4,14 +4,13 @@
 #include <iostream>
 #include "fssimplewindow.h"
 #include "ysglfontdata.h"
-#include "mmlplayer.h"
 #include "yssimplesound.h"
 #include "menu.h"
 #include "background.h"
 #include "ship.h"
 #include "asteroid_manager.hpp"
 #include "SoundManager.h"
-#include "PlayerStats.hpp"
+#include "summary.hpp"
 #include <cstdlib>
 
 // Windows compiler:
@@ -39,8 +38,9 @@ public:
     SoundManager soundManager;   
     AsteroidManager manager;
     GameSummary gameSummary;
+    Background background;
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
-    PlayerStats stats[2] = { PlayerStats(maxLevel), PlayerStats(maxLevel)};
+    PlayerStats stats[2] = { PlayerStats(1,maxLevel), PlayerStats(2,maxLevel)};
 
 
     Game() {
@@ -90,9 +90,15 @@ public:
         }
 
         // Display end game summary and credits
+        std::cout << "About to display end summary" << std::endl;
         displayEndGameSummary();
-        while (!FsGetKeyState(FSKEY_ESC)) {
+        for (;;) {
             FsPollDevice();
+            auto key=FsInkey();
+            if (key == FSKEY_ESC)
+            {
+                break;
+            }
         }
 
     }
@@ -139,6 +145,7 @@ public:
         difficultySetting = menu.difficulty;
         checkDifficulty();
         manager.initialize(difficultySetting, 800, 600, asteriods_per_level[currentLevel]);
+        background.InitializeStars(200);
         std::cout << "Asteroids: " << manager.getCurrentAsteroids().size() << std::endl;
 
         
@@ -166,7 +173,9 @@ public:
         soundManager.PlayMusic();
 
         
-        gameSummary.Initialize(numPlayers, 3, difficultySetting);
+        gameSummary.numPlayers = numPlayers;
+        gameSummary.numLevels = 3;
+        gameSummary.difficulty = difficultySetting;
         
         for (auto& stat : stats) {
             stat.startTimeCounter(currentLevel);
@@ -181,7 +190,7 @@ public:
         // Render background, ship, asteroids
         FsSwapBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        DrawBackground();
+        background.DrawBackground();
         
         ships[0].draw();
         ships[1].draw();
@@ -251,7 +260,7 @@ public:
                             if (checkCollision(missile.xCoord, missile.yCoord, 2, aster.x, aster.y, aster.radius)){
                                 missile.isActive = false;
                                 manager.destroyAsteroid(asteriod_counter);
-                                soundManager.PlayTink();
+                                soundManager.PlayExplosion();
                                 stats[current_ship].addOneAsteriodHit(currentLevel);
                             };
                         }
@@ -332,7 +341,7 @@ public:
         // std::cout<< "Ship missles reloaded" << std::endl;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        DrawBackground();
+        background.DrawBackground();
 
         glColor3ub(117, 255, 255);
         glRasterPos2i(300,100);
@@ -355,14 +364,15 @@ public:
 
     void displayEndGameSummary() {
         // Display summary statistics and credits
-        for (int player = 0; player < numPlayers; ++player) {
+        for (int player = 0; player < numPlayers + 1; ++player) {
+        std::cout << __LINE__ << std::endl;
             if (ships[player].isAlive) {
                 stats[player].saveTimeCounter(currentLevel);
             }
-            gameSummary.showEndgame(stats[player], currentLevel, player);   
+            gameSummary.showEndgame(stats[player]);   
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        DrawBackground();
+        background.DrawBackground();
 
         glColor3ub(255, 0, 255);
         glRasterPos2i(300,100);
