@@ -7,11 +7,18 @@ Game development project for CMU 24780
 I do
 gitignore on these
 
-fssimplewindow.hpp;
-fssimplewindow.cpp;
-yssimplesound.hpp;
-yssimplesound.cpp;
-mmlplayer.hpp;
+fssimplewindow.h
+fssimplewindow.cpp
+yssimplesound.h
+yssimplesound.cpp 
+mmlplayer.h
+mmlplayer.cpp
+yspng.h
+yspng.cpp
+ym2612.h
+ysglfontdata.h
+ysglfontdata.c
+mmlplayer.h
 mmlplayer.cpp
 
 so you have to copy your own system-dependent files into your local directory.
