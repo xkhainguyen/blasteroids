@@ -4,10 +4,34 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+// Define a struct for RGB colors
+struct RGBColor {
+    float r, g, b;
+};
+
+// Define the color palette
+static const std::vector<RGBColor> colorPalette = {
+    {1.0f, 0.0f, 0.0f}, // Red
+    {0.0f, 1.0f, 0.0f}, // Green
+    {0.0f, 0.0f, 1.0f}, // Blue
+    {1.0f, 1.0f, 0.0f}, // Yellow
+    {1.0f, 0.0f, 1.0f}, // Magenta
+    {0.0f, 1.0f, 1.0f}, // Cyan
+    {1.0f, 0.5f, 0.0f}, // Orange
+};
 
 // Constructor implementation
 Asteroid::Asteroid(double x, double y, double vx, double vy, double radius, int breakUpCount)
-    : x(x), y(y), vx(vx), vy(vy), radius(radius), isActive(true), breakUpCount(breakUpCount) {}
+    : x(x), y(y), vx(vx), vy(vy), radius(radius), isActive(true), breakUpCount(breakUpCount) {
+        // Initialize the random seed
+        srand(static_cast<unsigned int>(time(nullptr)));
+
+        // Randomly select a color from the palette
+        RGBColor selectedColor = colorPalette[rand() % colorPalette.size()];
+        colorR = selectedColor.r;
+        colorG = selectedColor.g;
+        colorB = selectedColor.b;
+    }
 
 // Update the position of the asteroid
 void Asteroid::updatePosition() {
@@ -17,21 +41,7 @@ void Asteroid::updatePosition() {
 
 // Simulate breaking up the asteroid
 int Asteroid::breakUp() {
-    isActive = false; // For simplicity, just deactivate the asteroid
-
-    // // Change color to white: pseudo-explosion
-    // glColor3f(1.0, 1.0, 1.0);
-
-    // // Draw the asteroid
-    // glBegin(GL_POLYGON);
-    // for(int i = 0; i < 360; i++) {
-    //     float degInRad = i * M_PI / 180.0;
-    //     glVertex2f(x + cos(degInRad) * radius, y + sin(degInRad) * radius);
-    // }
-    // glEnd();
-    // Add explosion animation here
-    //IDEA: make it still for some time
-    
+    isActive = false; // For simplicity, just deactivate the asteroid    
 
     return breakUpCount;
 }
@@ -39,11 +49,11 @@ int Asteroid::breakUp() {
 // Draw the asteroid
 void Asteroid::drawAsteroid() const {
     if (isActive) {
-        glColor3f(0.5f, 0.5f, 0.5f); // Set color to gray
-        glBegin(GL_POLYGON);
-        for(int i = 0; i < 360; i++) {
-            float degInRad = i * M_PI / 180.0f;
-            glVertex2f(x + cos(degInRad) * radius, y + sin(degInRad) * radius);
+        glColor3f(colorR, colorG, colorB);
+        glBegin(GL_LINE_LOOP);
+        for(int i = 0; i < 8; i++) {
+            float angle = 2 * M_PI * i / 8;
+            glVertex2f(x + cos(angle) * radius, y + sin(angle) * radius);
         }
         glEnd();
     }
