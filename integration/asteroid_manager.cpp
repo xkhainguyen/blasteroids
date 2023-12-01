@@ -34,14 +34,14 @@ void AsteroidManager::setDifficulty(int level) {
     asteroids.clear();
 
     // Initialize new asteroids
-    for (int i = 0; i < numAsteroids; i++) {
+    for (int i = 0; i <= numAsteroids; i++) {
         initializeAsteroid(0.0, 0.0, false, 0);
     }
 }
 
 void AsteroidManager::initializeAsteroid(double posX = 0, double posY = 0, bool isBreakup = false, int param = 0)
 {
-    std::uniform_real_distribution<> dis(-10.0 * difficultyLevel, 10.0 * difficultyLevel);
+    std::uniform_real_distribution<> dis(-2 * difficultyLevel, 2 * difficultyLevel);
     std::uniform_real_distribution<> disPos(0, mapHeight);
     std::uniform_real_distribution<> disRadius(10, 30);
 
