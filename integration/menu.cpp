@@ -174,7 +174,9 @@ int GameMenu::RunOneStep()
             players_dd.b1.setMsg("V");             
         }
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    DrawBackground();
+    Background background;
+    background.InitializeStars(100);
+    background.DrawBackground();
     start.Draw();
     glColor3ub(255,255,255);
     glRasterPos2d(200,270);
