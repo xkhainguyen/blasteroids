@@ -39,7 +39,7 @@ public:
     GameMenu menu;
     SoundManager soundManager;   
     AsteroidManager manager;
-    GameSummary gameSummary;
+    GameSummary gameSummary = GameSummary(numPlayers, maxLevel, maxDifficulty, windowWidth, windowHeight);
     Background background;
     Explosion explosion;
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
@@ -316,6 +316,14 @@ public:
         size_t noAsteroids = 0;
         if (noAsteroids == manager.getCurrentAsteroids().size()) {
             std::cout<< "Level up!! All the asteriods are gone!!!" << std::endl;
+
+            for (int player = 0; player < numPlayers; ++player) {
+                if (ships[player].isAlive) {
+                    // Need summary stats here 
+                    stats[player].saveTimeCounter(currentLevel-1);  // minus 1 because indices starts at 0
+                    stats[player].computeScoreLevels(difficultySetting, currentLevel-1);
+                }
+            }
             currentLevel = currentLevel + 1;
             InitializeNextLevel();
         }
@@ -324,14 +332,13 @@ public:
 
     void InitializeNextLevel() {
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        background.DrawBackground();
+
         for (int player = 0; player < numPlayers; ++player) {
             if (ships[player].isAlive) {
-                // Need summary stats here 
-                // stats[player].saveTimeCounter(currentLevel-1);
-                // gameSummary.showStats(stats[player], currentLevel-1, player); 
-                // stats[player].startTimeCounter(currentLevel);
+                gameSummary.showStats(stats[player], currentLevel-2);  // minus 2 to show previous level stats
             }
-
         }
 
         manager.initialize(difficultySetting, 800, 600, asteriods_per_level[currentLevel]);
@@ -349,13 +356,10 @@ public:
         
         // std::cout<< "Ship missles reloaded" << std::endl;
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        background.DrawBackground();
-
         glColor3ub(117, 255, 255);
-        glRasterPos2i(300,100);
+        glRasterPos2i(300,50);
         YsGlDrawFontBitmap12x16("Level Complete");
-        glRasterPos2i(200,200);
+        glRasterPos2i(200,70);
         YsGlDrawFontBitmap12x16("Press enter to start new level");
 
         FsSwapBuffers();
@@ -365,6 +369,11 @@ public:
         while (!FsGetKeyState(FSKEY_ESC)) {
             FsPollDevice();
             if (FsGetKeyState(FSKEY_ENTER)) {
+                for (int player = 0; player < numPlayers; ++player) {
+                    if (ships[player].isAlive) {
+                        stats[player].startTimeCounter(currentLevel-1);
+                    }
+                }
                 break;
             }
         }
@@ -373,19 +382,20 @@ public:
 
     void displayEndGameSummary() {
         // Display summary statistics and credits
-        for (int player = 0; player < numPlayers + 1; ++player) {
-        std::cout << __LINE__ << std::endl;
-            if (ships[player].isAlive) {
-                stats[player].saveTimeCounter(currentLevel);
-            }
-            gameSummary.showEndgame(stats[player]);   
-        }
+        // for (int player = 0; player < numPlayers + 1; ++player) {
+        // std::cout << __LINE__ << std::endl;
+        //     if (ships[player].isAlive) {
+        //         stats[player].saveTimeCounter(currentLevel);
+        //     }
+        //     gameSummary.showEndgame(stats[player]);   
+        // }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         background.DrawBackground();
+        gameSummary.showCredit();
 
-        glColor3ub(255, 0, 255);
-        glRasterPos2i(300,100);
-        YsGlDrawFontBitmap12x16("Game over");
+        // glColor3ub(255, 0, 255);
+        // glRasterPos2i(300,100);
+        // YsGlDrawFontBitmap12x16("Game over");
 
         FsSwapBuffers();
         FsSleep(25);

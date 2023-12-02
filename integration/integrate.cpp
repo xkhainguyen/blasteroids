@@ -39,7 +39,7 @@ public:
     GameMenu menu;
     SoundManager soundManager;   
     AsteroidManager manager;
-    GameSummary gameSummary;
+    GameSummary gameSummary(numPlayers, ;
     Background background;
     Explosion explosion;
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };

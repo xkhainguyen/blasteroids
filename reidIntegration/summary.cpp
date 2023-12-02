@@ -118,7 +118,7 @@ int GameSummary::showCredit()
 {
     int _hOffset = int(wid / 4);
     int _vOffset = int(hei / 4) + 30;
-    glColor3ub(0, 0, 255);
+    glColor3ub(117, 255, 255);
     glRasterPos2i(_hOffset, _vOffset - 50);
     string str = this->statement;
     YsGlDrawFontBitmap16x20(str.c_str());
