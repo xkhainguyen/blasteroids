@@ -34,6 +34,13 @@ g++ main.cpp ship.cpp [additional things]
 to complie the menu test script the following additional files must be included in the compile command along with `menu_test_script.cpp` 
 `menu.cpp fssimplewindow.cpp ysglfontdata.c`
 
+## Compiling integrate 
+on windows
+```bash
+cl /EHsc integrate.cpp menu.cpp fssimplewindow.cpp ysglfontdata.c  yssimplesound.cpp mmlplayer.cpp background.cpp asteroid.cpp asteroid_manager.cpp ship.cpp SoundManager.cpp PlayerStats.cpp
+```
+
+
 <!-- I dont see menu_test_script.cpp -->
 <!-- ALSO here's VSCode tasks.json for reference -->
 
