@@ -11,6 +11,7 @@
 #include "asteroid_manager.hpp"
 #include "SoundManager.h"
 #include "summary.hpp"
+#include "explosion.h"
 #include <cstdlib>
 
 // Windows compiler:
@@ -19,7 +20,8 @@
 
 
 
-class Game {
+class Game 
+{
 public:
     bool isGameOver;
     int currentLevel = 1;
@@ -39,6 +41,7 @@ public:
     AsteroidManager manager;
     GameSummary gameSummary;
     Background background;
+    Explosion explosion;
 	Ship ships[2] = { Ship(x1, y1, windowWidth, windowHeight, 1), Ship(x2, y2, windowWidth, windowHeight, 2) };
     PlayerStats stats[2] = { PlayerStats(1,maxLevel), PlayerStats(2,maxLevel)};
 
@@ -104,7 +107,9 @@ public:
     }
 
     void displayMenu() {
-        
+        soundManager.Initialize();
+        soundManager.player.Start();
+        soundManager.PlayIntro();
         menu.SetButtons();
         for(;;)
         {
@@ -168,8 +173,7 @@ public:
 
 
         // Initialize sound
-        soundManager.Initialize();
-        soundManager.player.Start();
+        soundManager.player.Stop(soundManager.intro);
         soundManager.PlayMusic();
 
         
@@ -249,6 +253,9 @@ public:
                 if (checkCollision(ship.xCoord, ship.yCoord, 15, aster.x, aster.y, aster.radius)){
                     if (ship.isAlive){
                         ship.isAlive = false;
+                        explosion.Explode(aster.x,aster.y);
+                        explosion.Move();
+                        explosion.Draw();
                         soundManager.PlayExplosion();
                         stats[current_ship].saveTimeCounter(currentLevel);
                     }
@@ -260,6 +267,9 @@ public:
                             if (checkCollision(missile.xCoord, missile.yCoord, 2, aster.x, aster.y, aster.radius)){
                                 missile.isActive = false;
                                 manager.destroyAsteroid(asteriod_counter);
+                                explosion.Explode(aster.x,aster.y);
+                                explosion.Move();
+                                explosion.Draw();
                                 soundManager.PlayExplosion();
                                 stats[current_ship].addOneAsteriodHit(currentLevel);
                             };
@@ -271,7 +281,6 @@ public:
             asteriod_counter = asteriod_counter +1;
 
 		}
-
     }
 
     bool checkCollision(int aX, int aY, int aRad, int bX, int bY, int bRad) {
