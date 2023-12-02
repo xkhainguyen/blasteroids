@@ -107,7 +107,9 @@ public:
     }
 
     void displayMenu() {
-        
+        soundManager.Initialize();
+        soundManager.player.Start();
+        soundManager.PlayIntro();
         menu.SetButtons();
         for(;;)
         {
@@ -171,8 +173,7 @@ public:
 
 
         // Initialize sound
-        soundManager.Initialize();
-        soundManager.player.Start();
+        soundManager.player.Stop(soundManager.intro);
         soundManager.PlayMusic();
 
         

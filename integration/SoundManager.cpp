@@ -23,6 +23,10 @@ void SoundManager::Initialize(void)
     {
         std::cout << "Cannot load music.wav" << std::endl;
     }
+    if(YSOK!=intro.LoadWav("intro.wav"))
+    {
+        std::cout << "Cannot load intro.wav" << std::endl;
+    }
 }
 
 void SoundManager::PlayMusic(void)
@@ -48,5 +52,10 @@ void SoundManager::PlayExplosion(void)
 void SoundManager::PlayShoot(void)
 {
     player.PlayOneShot(blaster);
+}
+
+void SoundManager::PlayIntro(void)
+{
+    player.PlayBackground(intro);
 }
 

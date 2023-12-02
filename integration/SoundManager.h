@@ -12,8 +12,10 @@ public:
     YsSoundPlayer::SoundData rocketThrust;
     YsSoundPlayer::SoundData tink;
     YsSoundPlayer::SoundData music;
+    YsSoundPlayer::SoundData intro;
 
     void Initialize(void);
+    void PlayIntro(void);
     void PlayMusic(void);
     void PlayThrust(void);
     void PlayTink(void);
