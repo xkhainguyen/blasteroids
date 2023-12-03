@@ -49,7 +49,7 @@ public:
     int hOffset;  // horizontal offset
     vector<string> members = {"Nikole Chetty", "Reid Graves" , "Jeremy Kilbride", "Vignesh Menon", "Khai Nguyen", "Pratik Satija", "Anton Yanovich"};  // team members
     vector<string> tasks = {"Integration Design", "Sound Design", "Menu Design", "Ship Design", "Statistics Design", "Background Design", "Asteroid Design"};  // tasks
-    string statement = "Thanks for watching!";  // statement
+    string statement = "Hope you have fun!";  // statement
 
 public:
     GameSummary(int numPlayers, int numLevels, int difficulty, int wid, int hei);  // constructor

@@ -55,7 +55,7 @@ int PlayerStats::saveTimeCounter(int level)
 
 int PlayerStats::computeScoreLevels(int difficulty, int level)
 {
-    this->scoreLevels[level] = (this->numAsteroidHitLevels[level] * 10) - (this->numBulletShotLevels[level] * 5) + (this->timeLevels[level] * 2);
+    this->scoreLevels[level] = (this->numAsteroidHitLevels[level] * 10) - (this->numBulletShotLevels[level] * 0.5) - (this->timeLevels[level]*0.5);
     this->scoreTotal += this->scoreLevels[level];
     return difficulty * this->scoreLevels[level];
 }
@@ -96,7 +96,7 @@ int GameSummary::showStats(PlayerStats stats, int level)
     }
     
     glRasterPos2i(_hOffset, _vOffset);
-    string str = "Player " + to_string(stats.id) + " stats for level " + to_string(level);
+    string str = "Player " + to_string(stats.id) + " stats for level " + to_string(level+1);
     YsGlDrawFontBitmap16x20(str.c_str());
     glRasterPos2i(_hOffset, _vOffset + this->vSpace);
     str = "Number of Asteroid Hit: " + to_string(stats.numAsteroidHitLevels[level]);
@@ -119,10 +119,10 @@ int GameSummary::showCredit()
     int _hOffset = int(wid / 4);
     int _vOffset = int(hei / 4) + 30;
     glColor3ub(117, 255, 255);
-    glRasterPos2i(_hOffset, _vOffset - 50);
+    glRasterPos2i(int(wid / 2) - 150, _vOffset - 50);
     string str = this->statement;
     YsGlDrawFontBitmap16x20(str.c_str());
-    glRasterPos2i(_hOffset, _vOffset);
+    glRasterPos2i(int(wid / 2) - 50, _vOffset);
     str = "Credits";
     YsGlDrawFontBitmap16x20(str.c_str());
     for (int i = 0; i < this->members.size(); i++)
@@ -147,14 +147,11 @@ int GameSummary::showEndgame(PlayerStats stats)
         glColor3ub(0, 0, 255);
         _vOffset = int(hei / 3) + 50 + this->vSpace*3;
     }
-    glColor3ub(255,255,255);
-    std::cout << __LINE__ << std::endl; 
-    glRasterPos2i(300, 400);
-    std::string str = "Player " + to_string(stats.id) + " stats for the game";
-    std::cout << str << std::endl;
+
+    glRasterPos2i(_hOffset, _vOffset);
+    string str = "Player " + to_string(stats.id) + " stats for the game";
     YsGlDrawFontBitmap16x20(str.c_str());
-    std::cout << __LINE__ << std::endl;
-    glRasterPos2i(300,400);
+    glRasterPos2i(_hOffset, _vOffset + this->vSpace);
     str = "Number of Asteroid Hit: " + to_string(stats.numAsteroidHitTotal);
     YsGlDrawFontBitmap12x16(str.c_str());
     glRasterPos2i(_hOffset, _vOffset + this->vSpace * 2);
