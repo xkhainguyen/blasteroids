@@ -55,7 +55,7 @@ int PlayerStats::saveTimeCounter(int level)
 
 int PlayerStats::computeScoreLevels(int difficulty, int level)
 {
-    this->scoreLevels[level] = (this->numAsteroidHitLevels[level] * 10) - (this->numBulletShotLevels[level] * 0.5) - (this->timeLevels[level]*0.5);
+    this->scoreLevels[level] = (this->numAsteroidHitLevels[level] * 10) - (this->numBulletShotLevels[level] * 0.5) + (this->timeLevels[level]*0.5);
     this->scoreTotal += this->scoreLevels[level];
     return difficulty * this->scoreLevels[level];
 }
@@ -87,12 +87,12 @@ int GameSummary::showStats(PlayerStats stats, int level)
     int _vOffset = this->vOffset;
     if (stats.id == 1) {
         glColor3ub(255, 0, 0);
-        _vOffset = int(hei / 3) - this->vSpace*2;
+        _vOffset = int(hei / 3) - this->vSpace*2 + 20;
     }
     if (stats.id == 2)
     {
         glColor3ub(0, 0, 255);
-        _vOffset = int(hei / 3) + 50 + this->vSpace*3;
+        _vOffset = int(hei / 3) + this->vSpace*3 + 50;
     }
     
     glRasterPos2i(_hOffset, _vOffset);
@@ -119,15 +119,15 @@ int GameSummary::showCredit()
     int _hOffset = int(wid / 4);
     int _vOffset = int(hei / 4) + 30;
     glColor3ub(117, 255, 255);
-    glRasterPos2i(int(wid / 2) - 150, _vOffset - 50);
+    glRasterPos2i(int(wid / 2) - 130, _vOffset);
     string str = this->statement;
     YsGlDrawFontBitmap16x20(str.c_str());
-    glRasterPos2i(int(wid / 2) - 50, _vOffset);
+    glRasterPos2i(int(wid / 2) - 50, _vOffset + 40);
     str = "Credits";
     YsGlDrawFontBitmap16x20(str.c_str());
     for (int i = 0; i < this->members.size(); i++)
     {
-        glRasterPos2i(_hOffset, _vOffset + this->vSpace * (i + 1));
+        glRasterPos2i(_hOffset, _vOffset + this->vSpace * (i + 1) + 60);
         str = this->members[i] + " - " + this->tasks[i];
         YsGlDrawFontBitmap12x16(str.c_str());
     }

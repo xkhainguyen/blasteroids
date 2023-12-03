@@ -24,7 +24,7 @@ class Game
 {
 public:
     bool isGameOver;
-    int currentLevel = 4;
+    int currentLevel = 1;
     int x1 = 200, y1 = 550, x2 = 600, y2 = 550;
 	int friendlyFire = 0;
 	int windowWidth = 800, windowHeight = 600;
@@ -312,9 +312,9 @@ public:
 
             for (int player = 0; player < numPlayers; ++player) {
                 if (ships[player].isAlive) {
-                    std::cout << "COMPUTE SCORE OF PLAYER: " << player << std::endl;
-                    stats[player].computeScoreLevels(difficultySetting, currentLevel-1);
+                    std::cout << "COMPUTE SCORE OF PLAYER: " << stats[player].timeLevels[currentLevel-1] << std::endl;
                     stats[player].saveTimeCounter(currentLevel-1);  // minus 1 because indices starts at 0
+                    stats[player].computeScoreLevels(difficultySetting, currentLevel-1);
                 }
             }
 
@@ -349,9 +349,9 @@ public:
 
         glColor3ub(117, 255, 255);
         glRasterPos2i(300,50);
-        YsGlDrawFontBitmap12x16("Level Complete");
-        glRasterPos2i(270,70);
-        YsGlDrawFontBitmap12x16("Press enter to proceed");
+        YsGlDrawFontBitmap16x20("Level Complete");
+        glRasterPos2i(250,80);
+        YsGlDrawFontBitmap16x20("Press enter to proceed");
 
         FsSwapBuffers();
         FsSleep(25);
@@ -391,10 +391,12 @@ public:
                 enCredit++;
             }
             glColor3ub(117, 255, 255);
+            glRasterPos2i(340,50);
+            YsGlDrawFontBitmap16x20("Game over");
             int blinking = rand();
             if (blinking % 2 == 0) {
-                glRasterPos2i(270,70);
-                YsGlDrawFontBitmap12x16("Press enter to proceed");
+                glRasterPos2i(250,80);
+                YsGlDrawFontBitmap16x20("Press enter to proceed");
             }
             if (enCredit > 0) {
                 gameSummary.showCredit();
