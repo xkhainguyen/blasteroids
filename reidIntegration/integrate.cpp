@@ -14,10 +14,32 @@
 #include "explosion.h"
 #include <cstdlib>
 
-// Windows compiler:
-// cl /EHsc integrate.cpp menu.cpp fssimplewindow.cpp ysglfontdata.c yssimplesound.cpp mmlplayer.cpp
-// background.cpp asteroid.cpp asteroid_manager.cpp ship.cpp SoundManager.cpp PlayerStats.cpp
 
+/*
+Compile Command for windows with visual c++
+cl /EHsc integrate.cpp menu.cpp fssimplewindow.cpp ysglfontdata.c yssimplesound.cpp mmlplayer.cpp 
+background.cpp asteroid.cpp asteroid_manager.cpp ship.cpp SoundManager.cpp summary.cpp explosion.cpp
+
+Also Ensure you are using the proper versions of all libraries provided in class for your OS.
+
+void DrawAsteroidsLeft(int x,int y,int w,int h,int r, int g, int b, std::string str)
+{
+    glEnable(GL_LINE_STIPPLE);
+	glLineStipple(1,0b111000111000);
+	glColor3f(r,g,b);
+	glBegin(GL_LINE_LOOP);
+	glVertex2i(x,y);
+	glVertex2i(x+w,y);
+	glVertex2i(x+w,y+h);
+	glVertex2i(x,y+h);
+	glEnd();
+    glDisable(GL_LINE_STIPPLE);
+    glRasterPos2i(x+30,y+30);
+    YsGlDrawFontBitmap12x16(str.c_str());
+}
+
+
+*/
 class Game
 {
 public:
@@ -47,6 +69,22 @@ public:
         // Initialize the game state
         isGameOver = false;
         FsOpenWindow(50, 50, 800, 600, 1);
+    }
+
+    void DrawAsteroidsLeft(int x,int y,int w,int h,int r, int g, int b, std::string str)
+    {
+    glEnable(GL_LINE_STIPPLE);
+	glLineStipple(1,0b111000111000);
+	glColor3f(r,g,b);
+	glBegin(GL_LINE_LOOP);
+	glVertex2i(x,y);
+	glVertex2i(x+w,y);
+	glVertex2i(x+w,y+h);
+	glVertex2i(x,y+h);
+	glEnd();
+    glDisable(GL_LINE_STIPPLE);
+    glRasterPos2i(x+5,y+20);
+    YsGlDrawFontBitmap12x16(str.c_str());
     }
 
     void run()
@@ -194,7 +232,10 @@ public:
         ships[1].draw();
 
         manager.drawAsteroids();
-
+        int naster=manager.getCurrentAsteroids().size();
+        
+        std::string naster_str="Asteroids left:"+to_string(naster);
+        DrawAsteroidsLeft(580,10,200,30,0,1,0,naster_str);
         FsSleep(25);
     }
 

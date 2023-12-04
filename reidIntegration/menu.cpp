@@ -185,6 +185,9 @@ int GameMenu::RunOneStep()
     glRasterPos2d(50,270);
     YsGlDrawFontBitmap10x14("Difficulty");
     diff_dd.Draw(lb,mb,rb,mx,my,evt);
+    glColor3f(0,255,0);
+    glRasterPos2d(268,100);
+    YsGlDrawFontBitmap24x40("BLASTEROIDS");
     FsSwapBuffers();
     difficulty=diff_dd.return_val;
     if (1==players_dd.return_val)
