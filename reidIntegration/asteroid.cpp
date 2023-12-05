@@ -23,14 +23,19 @@ static const std::vector<RGBColor> colorPalette = {
 // Constructor implementation
 Asteroid::Asteroid(double x, double y, double vx, double vy, double radius, int breakUpCount)
     : x(x), y(y), vx(vx), vy(vy), radius(radius), isActive(true), breakUpCount(breakUpCount) {
-        // Initialize the random seed
-        srand(static_cast<unsigned int>(time(nullptr)));
+        int paletteIndex = breakUpCount % colorPalette.size();
+        RGBColor selectedColor = colorPalette[paletteIndex];
 
-        // Randomly select a color from the palette
-        RGBColor selectedColor = colorPalette[rand() % colorPalette.size()];
         colorR = selectedColor.r;
         colorG = selectedColor.g;
         colorB = selectedColor.b;
+
+        creationTime = FsPassedTime();
+    }
+
+bool Asteroid::isNew() const {
+        long long currentTime = FsPassedTime();
+        return (currentTime - creationTime) < 500; // 500 milliseconds
     }
 
 // Update the position of the asteroid

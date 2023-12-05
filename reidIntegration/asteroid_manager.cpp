@@ -102,6 +102,10 @@ void AsteroidManager::drawAsteroids() {
 
 // Check if two asteroids are colliding
 bool AsteroidManager::checkCollision(Asteroid& a, Asteroid& b) {
+    if (a.isNew() || b.isNew()) {
+        return false;
+    }
+    
     double dx = b.x - a.x;
     double dy = b.y - a.y;
     double distance = std::sqrt(dx * dx + dy * dy);
