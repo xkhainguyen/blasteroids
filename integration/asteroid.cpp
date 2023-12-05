@@ -30,12 +30,13 @@ Asteroid::Asteroid(double x, double y, double vx, double vy, double radius, int 
         colorG = selectedColor.g;
         colorB = selectedColor.b;
 
-        creationTime = FsPassedTime();
+        //creationTime = FsPassedTime();
+        creationTime = std::chrono::steady_clock::now();
     }
 
 bool Asteroid::isNew() const {
-        long long currentTime = FsPassedTime();
-        return (currentTime - creationTime) < 150;
+        auto now = std::chrono::steady_clock::now();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(now - creationTime).count() < 250; // 250 milliseconds
     }
 
 // Update the position of the asteroid
