@@ -1,7 +1,6 @@
 #include "menu.h"
 #include "fssimplewindow.h"
 #include "ysglfontdata.h"
-#include "background.h"
 
 void Button::Draw()
 {
@@ -15,6 +14,7 @@ void Button::Draw()
     glColor3f(0,0,0);
     glRasterPos2i(x+5,y+30);
     YsGlDrawFontBitmap12x16(msg.c_str());
+    glColor3f(255,255,255);
 }
 Button::Button()
 {
@@ -98,7 +98,6 @@ void::Dropdown::Draw(int lb, int mb,int rb,int mx,int my,int evt)
     {
         expand(lb,mb,rb,mx,my,evt);
     }
-    glColor3ub(255,255,255);
     glRasterPos2d(b1.x-drop_wid+3,b1.y+20);
     YsGlDrawFontBitmap12x16(closed_message.c_str());
     glBegin(GL_LINE_LOOP);
@@ -124,6 +123,8 @@ void GameMenu::SetButtons()
     diff_dd.setMsgs(diffs);
     players_dd.setMsgs(players);
     players_dd.drop_wid=125;
+    diff_dd.closed_message="easy";
+    players_dd.closed_message="one player";
 }
 
 int GameMenu::RunOneStep()
@@ -174,20 +175,20 @@ int GameMenu::RunOneStep()
             players_dd.b1.setMsg("V");             
         }
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    Background background;
-    background.InitializeStars(100);
-    background.DrawBackground();
+    glColor3ub(0,0,0);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2d(0,0);
+    glVertex2d(800,0);
+    glVertex2d(800,600);
+    glVertex2d(0,600);
+    glEnd();
     start.Draw();
-    glColor3ub(255,255,255);
     glRasterPos2d(200,270);
     YsGlDrawFontBitmap10x14("Number of players");
     players_dd.Draw(lb,mb,rb,mx,my,evt);
     glRasterPos2d(50,270);
     YsGlDrawFontBitmap10x14("Difficulty");
     diff_dd.Draw(lb,mb,rb,mx,my,evt);
-    glColor3f(0,255,0);
-    glRasterPos2d(268,100);
-    YsGlDrawFontBitmap24x40("BLASTEROIDS");
     FsSwapBuffers();
     difficulty=diff_dd.return_val;
     if (1==players_dd.return_val)
