@@ -7,7 +7,6 @@
 #include <utility>
 #include <math.h>
 #include <cstdlib>
-#include <ctime>
 #include <vector>
 
 class Asteroid {
@@ -17,6 +16,7 @@ public:
     double radius;
     bool isActive;
     int breakUpCount = 0;
+    long long creationTime;
     //std::string appearance; // Representation of the asteroid's visual appearance
 
     Asteroid(double x, double y, double vx, double vy, double radius, int breakUpCount);
@@ -26,6 +26,8 @@ public:
     bool getState() const;
     std::string toString() const;
     std::pair<double,double> getPosition() const;
+
+    bool isNew() const;
 private:
     float colorR, colorG, colorB;
 };
