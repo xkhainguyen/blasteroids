@@ -35,7 +35,7 @@ Asteroid::Asteroid(double x, double y, double vx, double vy, double radius, int 
 
 bool Asteroid::isNew() const {
         long long currentTime = FsPassedTime();
-        return (currentTime - creationTime) < 500; // 500 milliseconds
+        return (currentTime - creationTime) < 150;
     }
 
 // Update the position of the asteroid
