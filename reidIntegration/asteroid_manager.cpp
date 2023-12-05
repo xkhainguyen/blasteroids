@@ -43,7 +43,7 @@ void AsteroidManager::initializeAsteroid(double posX = 0, double posY = 0, bool 
 {
     std::uniform_real_distribution<> dis(-2 * difficultyLevel, 2 * difficultyLevel);
     std::uniform_real_distribution<> disPos(0, mapHeight);
-    std::uniform_real_distribution<> disRadius(10, 30);
+    std::uniform_real_distribution<> disRadius(50, 70);
 
     // Initialize new asteroids
     double velocityX = dis(gen);
@@ -54,7 +54,7 @@ void AsteroidManager::initializeAsteroid(double posX = 0, double posY = 0, bool 
     if (!isBreakup)
         asteroids.push_back(Asteroid(x, y, velocityX, velocityY, radius, 0));
     else{
-        radius /= difficultyLevel;
+        radius /= (param+1);
         asteroids.push_back(Asteroid(posX, posY, velocityX, velocityY, radius, param));
     }
 }

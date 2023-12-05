@@ -8,6 +8,7 @@
 #include <math.h>
 #include <cstdlib>
 #include <vector>
+#include <chrono>
 
 class Asteroid {
 public:
@@ -16,7 +17,8 @@ public:
     double radius;
     bool isActive;
     int breakUpCount = 0;
-    long long creationTime;
+    //long long creationTime;
+    std::chrono::steady_clock::time_point creationTime;
     //std::string appearance; // Representation of the asteroid's visual appearance
 
     Asteroid(double x, double y, double vx, double vy, double radius, int breakUpCount);
