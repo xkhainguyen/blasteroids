@@ -2,8 +2,6 @@
 #define BLASTEROIDS_MENU_H_IS_INCLUDED
 #include <vector>
 #include <string>
-
-
 class Button
 {
     public:
@@ -12,18 +10,18 @@ class Button
         bool pushed=false;
         Button();
         void set(int _x,int _y,int _h,int _w,int _r,int _g, int _b,std::string _msg);
-        void Draw(); 
+        void Draw();
         void SetColor(int _r, int _g, int _b);
         void setMsg(std::string new_msg);
 };
 
-class Dropdown 
+class Dropdown
 {
     public:
         Button b1;
         int drop_wid=80;
         std::vector<std::string> messages;
-        int return_val=1;
+        int return_val=0;
         std::string closed_message;
         std::string drop_state="closed";
         void Draw(int lb, int mb,int rb,int mx,int my,int evt);
@@ -47,7 +45,7 @@ class GameMenu
         Button start;
         Dropdown players_dd;
         Dropdown diff_dd;
-        int difficulty=1;//1-> easy, 2-> medium, 3 -> hard
+        int difficulty=0;//1-> easy, 2-> medium, 3 -> hard
         bool isMultiplayer=false;
         void SetButtons();
         int RunOneStep (void);
