@@ -66,8 +66,6 @@ use the following compile command for clang:
 clang++ -std=c++11 -Wno-deprecated-declarations -o test.app/Contents/MacOS/exe integrate.cpp fssimplewindowcpp.cpp fssimplewindowobjc.o yssimplesound.cpp yssimplesound_macosx_objc.o SoundManager.cpp asteroid.cpp background.cpp summary.cpp ship.cpp asteroid_manager.cpp menu.cpp explosion.cpp ysglfontdata.c -framework Cocoa -framework OpenGL -framework AVfoundation
 ```
 
-### (2.2.3) g++
-
 
 ## (3) External Packages
 
