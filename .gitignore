@@ -45,3 +45,6 @@
 /integration/ysglfontdata.c
 /integration/mmlplayer.h
 /integration/mmlplayer.cpp
+
+!libraries/Notes.md
+libraries
