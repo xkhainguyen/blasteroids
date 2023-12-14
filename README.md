@@ -1,5 +1,9 @@
 # Blasteroids
 
+<p align="center">
+    <img src="documentation/poster.png" width="200" height="200">
+</p>
+
 Blasteroids: Blast the Asteroids -- Game Development Project for CMU 24780: Engineering Computation
 
 Authors: Nikole Chetty, Reid Graves, Jeremy Kilbride, Vignesh Menon, Khai Nguyen, Pratik Satija, Anton Yanovich
