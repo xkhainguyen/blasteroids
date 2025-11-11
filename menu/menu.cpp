@@ -175,11 +175,11 @@ int GameMenu::RunOneStep()
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     start.Draw();
     glRasterPos2d(200,270);
-    YsGlDrawFontBitmap10x14("Number of players");
+    YsGlDrawFontBitmap8x12("Number of players");
     players_dd.Draw(lb,mb,rb,mx,my,evt);
     glColor3f(1, 1, 1); // Text color
     glRasterPos2d(50,270);
-    YsGlDrawFontBitmap10x14("Difficulty");
+    YsGlDrawFontBitmap8x12("Difficulty");
     diff_dd.Draw(lb,mb,rb,mx,my,evt);
     FsSwapBuffers();
     difficulty=diff_dd.return_val;

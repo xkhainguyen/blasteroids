@@ -18,11 +18,11 @@ int main(void)
 
             if (true==menu.isMultiplayer)
             {
-                std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are two players";
+                std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there are two players\n";
             }
             else
             {
-               std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there is one player"; 
+               std::cout<<"the game has started, difficulty is:"<<menu.difficulty<< " there is one player\n"; 
             }
             break;
         }
