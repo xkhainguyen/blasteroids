@@ -22,11 +22,8 @@ clean:
 	rm -r ../build
 
 $(BIN_DIR)/$(TARGET): $(OBJECTS)
-	mkdir -p $(BIN_DIR)
+	@mkdir -p $(BIN_DIR)
 	$(CC) -o $@  $^ $(LFLAGS)
-
-$(BIN_DIR):
-	mkdir -p ../build/bin
 
 $(OBJ_DIR)/%.o:%.cpp
 	@mkdir -p $(OBJ_DIR)
